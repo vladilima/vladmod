@@ -7,7 +7,9 @@ import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class DarkFountain {
     RoomScanner.ScanResult roomInfo;
     public final BlockPos FOUNTAIN_POS;
     private BlockPos currentBlock;
+    List<BlockPos> roomBreaches = new ArrayList<>();
 
     private int ticksAlive = 0;
 
@@ -43,57 +46,87 @@ public class DarkFountain {
     public void tick(Level level) {
         if (!level.isClientSide()) {
             if (ticksToSpread <= 0) {
-                switch (getRoomStatus(level)) {
-                    case RoomState.FILLING -> {
-                        darknessSpread(level);
-                    }
-                    case RoomState.FILLED -> {
-                        System.out.println("Room Filled");
-                    }
-                    case RoomState.ALTERED -> {
-                        System.out.println("Room Altered");
-                    }
-                    case RoomState.BREACHED -> {
-                        System.out.println("Room Breached");
+                if (isRoomFilled(level)) {
+                    System.out.println("Room Filled");
+                } else {
+                    darknessSpread(level);
+                }
+
+                List<BlockPos> foundBreaches = getRoomBreaches(level);
+                if (!foundBreaches.isEmpty()) {
+                    System.out.println("Room Breached");
+                    for (BlockPos breachPos : foundBreaches) {
+                        RoomScanner.ScanResult breachScan = RoomScanner.scan(level, breachPos, true, List.of());
+                        if (breachScan != null && !breachScan.roomBlocks.isEmpty()) {
+                            // Remove possible duplicates
+                            breachScan.roomBlocks.removeAll(roomInfo.roomBlocks);
+                            breachScan.wallBlocks.removeAll(roomInfo.wallBlocks);
+                            breachScan.doorBlocks.removeAll(roomInfo.doorBlocks);
+
+                            // Adds new scan
+                            roomInfo.roomBlocks.addAll(breachScan.roomBlocks);
+                            roomInfo.wallBlocks.addAll(breachScan.wallBlocks);
+                            roomInfo.doorBlocks.addAll(breachScan.doorBlocks);
+
+                            this.roomBreaches.remove(breachPos);
+                        } else {
+                            if (!this.roomBreaches.contains(breachPos)) {
+                                this.roomBreaches.add(breachPos);
+                            }
+                        }
                     }
                 }
+
                 ticksToSpread = DARKNESS_SPREAD_DELAY;
             }
 
             ticksToSpread--;
             ticksAlive++;
-
-//            if (ticksToSpread < -10) {
-//                removeFountain(level, this);
-//            }
         }
     }
 
-    private RoomState getRoomStatus(Level level) {
-        RoomScanner.ScanResult newScan = RoomScanner.scan(level, this.FOUNTAIN_POS);
-
-        if (newScan != null && !newScan.roomBlocks.isEmpty()) {
-            if (
-                    !newScan.roomBlocks.equals(roomInfo.roomBlocks)  ||
-                    !newScan.wallBlocks.equals(roomInfo.wallBlocks)  ||
-                    !newScan.doorBlocks.equals(roomInfo.doorBlocks)
-            ) {
-                roomInfo = newScan;
-                return RoomState.ALTERED;
-            }
-        }
-
+    private boolean isRoomFilled(Level level) {
         for (BlockPos blockPos : roomInfo.roomBlocks){
             if (fillableBlock(level, blockPos)) {
-                return RoomState.FILLING;
+                return false;
+            } else if (isSolid(level, blockPos)) {
+                System.out.println("Solid Block Found Inside Room, Running Scan For Closed Off Areas.");
+                RoomScanner.ScanResult roomScan = RoomScanner.scan(level, this.FOUNTAIN_POS, false, roomBreaches);
+                if (roomScan != null && !roomScan.roomBlocks.isEmpty()) {
+                    this.roomInfo = roomScan;
+                } else {
+                    this.roomInfo.roomBlocks.remove(blockPos);
+                    if (level.getBlockState(blockPos).is(BlockTags.DOORS)) {
+                        this.roomInfo.doorBlocks.add(blockPos);
+                    } else {
+                        this.roomInfo.wallBlocks.add(blockPos);
+                    }
+                }
             }
         }
 
-        if (newScan == null) {
-            return RoomState.BREACHED;
+        return true;
+    }
+
+    private List<BlockPos> getRoomBreaches(Level level) {
+        List<BlockPos> breachList = new ArrayList<>();
+
+        for (BlockPos blockPos : roomInfo.wallBlocks){
+            if (fillableBlock(level, blockPos)) {
+                breachList.add(blockPos);
+            }
         }
 
-        return RoomState.FILLED;
+        for (BlockPos blockPos : roomInfo.doorBlocks){
+            if (fillableBlock(level, blockPos)) {
+                breachList.add(blockPos);
+            }
+        }
+
+        // Remove non-breaches from breach list
+        this.roomBreaches.removeIf(breachPos -> isSolid(level, breachPos));
+
+        return breachList;
     }
 
     private void darknessSpread(Level level) {
@@ -127,6 +160,10 @@ public class DarkFountain {
 
     private boolean fillableBlock(Level level, BlockPos blockPos) {
         return level.getBlockState(blockPos) != ModBlocks.DARKNESS.get().defaultBlockState() && level.isEmptyBlock(blockPos);
+    }
+
+    private boolean isSolid(Level level, BlockPos blockPos) {
+        return level.getBlockState(blockPos) != ModBlocks.DARKNESS.get().defaultBlockState() && !level.isEmptyBlock(blockPos);
     }
 
     private BlockPos getNextBlock(Level level) {
@@ -213,13 +250,6 @@ public class DarkFountain {
     static Random rand = new Random();
     public static int randInt(int min, int max) {
         return rand.nextInt((max - min) + 1) + min;
-    }
-
-    enum RoomState {
-        FILLING,
-        FILLED,
-        ALTERED,
-        BREACHED
     }
 
     public boolean hasBlock(BlockPos pos) {

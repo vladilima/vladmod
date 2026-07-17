@@ -1,5 +1,6 @@
 package com.vladilima.vladmod.fountain;
 
+import com.vladilima.vladmod.blocks.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -13,7 +14,7 @@ import net.minecraft.world.level.block.Blocks;
 import java.util.*;
 
 public class RoomScanner {
-    public static ScanResult scan(Level level, BlockPos creationPos) {
+    public static ScanResult scan(Level level, BlockPos creationPos, boolean ignoreDarkness, List<BlockPos> ignoreList) {
         if (level.canSeeSky(creationPos)) {
             return null; // Empty scan (invalid room)
         }
@@ -39,8 +40,14 @@ public class RoomScanner {
 
                     for (Direction direction : Direction.values()){
                         BlockPos neighborPos = checkingBlock.relative(direction);
-                        if (!roomBlocks.contains(neighborPos) && !wallBlocks.contains(neighborPos) && !blockQueue.contains(neighborPos)) {
-                            blockQueue.add(neighborPos);
+                        if (!roomBlocks.contains(neighborPos) && !wallBlocks.contains(neighborPos) && !blockQueue.contains(neighborPos) && !ignoreList.contains(neighborPos)) {
+                            if (ignoreDarkness) {
+                                if (level.getBlockState(checkingBlock) != ModBlocks.DARKNESS.get().defaultBlockState()) {
+                                    blockQueue.add(neighborPos);
+                                }
+                            } else {
+                                blockQueue.add(neighborPos);
+                            }
                         }
                     }
                 } else {

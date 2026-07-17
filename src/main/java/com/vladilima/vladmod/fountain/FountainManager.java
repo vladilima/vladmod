@@ -7,12 +7,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class FountainManager {
 
     public static void makeFountain(Level level, BlockPos startingPos) {
-        RoomScanner.ScanResult scanResult = RoomScanner.scan(level, startingPos);
+        RoomScanner.ScanResult scanResult = RoomScanner.scan(level, startingPos, false, List.of());
         if (scanResult != null && !scanResult.roomBlocks.isEmpty()) {
             ArrayList<DarkFountain> darkFountains = level.getData(DarkFountainsAttachment.TYPE);
 
