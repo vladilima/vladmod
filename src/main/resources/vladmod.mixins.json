@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.vladilima.vladmod.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "StandUserMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

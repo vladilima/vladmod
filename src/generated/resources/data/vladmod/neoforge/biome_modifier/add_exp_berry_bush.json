@@ -1,0 +1,6 @@
+{
+  "type": "neoforge:add_features",
+  "biomes": "minecraft:dark_forest",
+  "features": "vladmod:exp_berry_bush",
+  "step": "vegetal_decoration"
+}

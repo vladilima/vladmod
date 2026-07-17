@@ -1,0 +1,20 @@
+{
+  "stand_summon": {
+    "subtitle": "sounds.vladmod.stand_summon",
+    "sounds": [
+      "vladmod:stand_summon"
+    ]
+  },
+  "stand_punch": {
+    "subtitle": "sounds.vladmod.stand_punch",
+    "sounds": [
+      "vladmod:stand_punch"
+    ]
+  },
+  "stand_punch_miss": {
+    "subtitle": "sounds.vladmod.stand_punch_miss",
+    "sounds": [
+      "vladmod:stand_punch_miss"
+    ]
+  }
+}

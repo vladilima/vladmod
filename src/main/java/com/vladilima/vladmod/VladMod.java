@@ -1,0 +1,131 @@
+package com.vladilima.vladmod;
+
+import com.vladilima.vladmod.attachments.ModAttachmentTypes;
+import com.vladilima.vladmod.blocks.ModBlocks;
+import com.vladilima.vladmod.blocks.entity.ModBlockEntities;
+import com.vladilima.vladmod.entity.ModEntities;
+import com.vladilima.vladmod.event.ServerEvents;
+import com.vladilima.vladmod.items.ModItems;
+import com.vladilima.vladmod.networking.C2SPackets;
+import com.vladilima.vladmod.particles.ModParticles;
+import com.vladilima.vladmod.sound.ModSounds;
+import org.slf4j.Logger;
+
+import com.mojang.logging.LogUtils;
+
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+// The value here should match an entry in the META-INF/neoforge.mods.toml file
+@Mod(VladMod.MOD_ID)
+public class VladMod {
+    // Define mod id in a common place for everything to reference
+    public static final String MOD_ID = "vladmod";
+    // Directly reference a slf4j logger
+    public static final Logger LOGGER = LogUtils.getLogger();
+
+    // The constructor for the mod class is the first code that is run when your mod is loaded.
+    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
+    public VladMod(IEventBus modEventBus, ModContainer modContainer) {
+        // Register the commonSetup method for modloading
+        modEventBus.addListener(this::commonSetup);
+
+        // Register ourselves for server and other game events we are interested in.
+        // Note that this is necessary if and only if we want *this* class (vladmod) to respond directly to events.
+        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
+        NeoForge.EVENT_BUS.register(this);
+
+        NeoForge.EVENT_BUS.register(new ServerEvents());
+
+        // VladMod Registries
+        LOGGER.info("Registering Items...");
+        ModItems.register(modEventBus);
+
+        LOGGER.info("Registering Blocks...");
+        ModBlocks.register(modEventBus);
+
+        LOGGER.info("Registering Block Entities...");
+        ModBlockEntities.register(modEventBus);
+
+        LOGGER.info("Registering Creative Tabs...");
+        CREATIVE_MODE_TABS.register(modEventBus);
+
+        LOGGER.info("Registering Entities...");
+        ModEntities.register(modEventBus);
+
+        LOGGER.info("Registering Sounds...");
+        ModSounds.register(modEventBus);
+
+        LOGGER.info("Registering Attachments...");
+        ModAttachmentTypes.register(modEventBus);
+
+        LOGGER.info("Registering Particles...");
+        ModParticles.register(modEventBus);
+
+        modEventBus.addListener(C2SPackets::register);
+
+//        // Register the item to a creative tab
+//        modEventBus.addListener(this::addCreative);
+
+        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    private void commonSetup(FMLCommonSetupEvent event) {
+        // Some common setup code
+        LOGGER.info("HELLO FROM COMMON SETUP");
+
+        if (Config.LOG_DIRT_BLOCK.getAsBoolean()) {
+            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
+        }
+
+        LOGGER.info("{}{}", Config.MAGIC_NUMBER_INTRODUCTION.get(), Config.MAGIC_NUMBER.getAsInt());
+
+        Config.ITEM_STRINGS.get().forEach((item) -> LOGGER.info("ITEM >> {}", item));
+    }
+
+//    // Add the example block item to the building blocks tab
+//    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+//        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+//            event.accept(EXAMPLE_BLOCK_ITEM);
+//        }
+//    }
+
+    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    @SubscribeEvent
+    public void onServerStarting(ServerStartingEvent event) {
+        // Do something when the server starts
+        LOGGER.info("HELLO from server starting");
+    }
+
+    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "vladmod" namespace
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+
+    // Creates a creative tab with the id "vladmod:example_tab" for the example item, that is placed after the combat tab
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.vladmod")) //The language key for the title of your CreativeModeTab
+            .withTabsBefore(CreativeModeTabs.COMBAT)
+            .icon(() -> ModItems.EXP_BERRY.get().getDefaultInstance())
+            .displayItems((parameters, output) -> {
+                output.accept(ModItems.EXP_BERRY.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
+                output.accept(ModItems.NETHER_STAR_ARROW.get());
+                output.accept(ModItems.STAND_ARROW.get());
+            }).build());
+
+
+
+}
