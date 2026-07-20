@@ -24,7 +24,12 @@ public class RoomScanner {
         List<BlockPos> doorBlocks = new ArrayList<>();
 
         LinkedList<BlockPos> blockQueue = new LinkedList<>();
-        blockQueue.add(findStartPosition(level, creationPos));
+        if (ignoreDarkness) {
+            blockQueue.add(creationPos);
+        } else {
+            blockQueue.add(findStartPosition(level, creationPos));
+        }
+
         BlockPos checkingBlock;
 
         while (!blockQueue.isEmpty()) {
@@ -42,7 +47,7 @@ public class RoomScanner {
                         BlockPos neighborPos = checkingBlock.relative(direction);
                         if (!roomBlocks.contains(neighborPos) && !wallBlocks.contains(neighborPos) && !blockQueue.contains(neighborPos) && !ignoreList.contains(neighborPos)) {
                             if (ignoreDarkness) {
-                                if (level.getBlockState(checkingBlock) != ModBlocks.DARKNESS.get().defaultBlockState()) {
+                                if (level.getBlockState(neighborPos) != ModBlocks.DARKNESS.get().defaultBlockState()) {
                                     blockQueue.add(neighborPos);
                                 }
                             } else {
@@ -82,8 +87,8 @@ public class RoomScanner {
         public List<BlockPos> wallBlocks;
         public List<BlockPos> doorBlocks;
 
-        public int lowestYLevel;
-        public int highestYLevel;
+        public BlockPos lowestYPos;
+        public BlockPos highestYPos;
 
         public ScanResult(List<BlockPos> roomBlocks, List<BlockPos> wallBlocks, List<BlockPos> doorBlocks) {
             this.roomBlocks = roomBlocks;
@@ -92,8 +97,8 @@ public class RoomScanner {
 
             if (roomBlocks != null && !roomBlocks.isEmpty()) {
                 List<BlockPos> sortedByY = roomBlocks.stream().sorted((a, b) -> (int) (a.getY() - b.getY())).toList();
-                this.lowestYLevel = sortedByY.getFirst().getY();
-                this.highestYLevel = sortedByY.getLast().getY();
+                this.lowestYPos = sortedByY.getFirst();
+                this.highestYPos = sortedByY.getLast();
             }
         }
 

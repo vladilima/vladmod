@@ -45,19 +45,25 @@ public class DarkFountain {
     private int ticksToSpread = 0;
     public void tick(Level level) {
         if (!level.isClientSide()) {
+            if (this.ticksAlive == 0) {
+                if (level.setBlockAndUpdate(currentBlock, ModBlocks.DARKNESS.get().defaultBlockState())) {
+                    DarknessBlockEntity newDarkness = (DarknessBlockEntity) level.getBlockEntity(currentBlock);
+                    if (newDarkness != null) {
+                        newDarkness.fountain = this;
+                    }
+                };
+            }
+
             if (ticksToSpread <= 0) {
-                if (isRoomFilled(level)) {
-                    System.out.println("Room Filled");
-                } else {
+                if (!isRoomFilled(level)) {
                     darknessSpread(level);
                 }
 
                 List<BlockPos> foundBreaches = getRoomBreaches(level);
                 if (!foundBreaches.isEmpty()) {
-                    System.out.println("Room Breached");
                     for (BlockPos breachPos : foundBreaches) {
                         RoomScanner.ScanResult breachScan = RoomScanner.scan(level, breachPos, true, List.of());
-                        if (breachScan != null && !breachScan.roomBlocks.isEmpty()) {
+                        if (breachScan != null && !breachScan.roomBlocks.isEmpty() && !breachScan.wallBlocks.isEmpty()) {
                             // Remove possible duplicates
                             breachScan.roomBlocks.removeAll(roomInfo.roomBlocks);
                             breachScan.wallBlocks.removeAll(roomInfo.wallBlocks);
@@ -67,6 +73,13 @@ public class DarkFountain {
                             roomInfo.roomBlocks.addAll(breachScan.roomBlocks);
                             roomInfo.wallBlocks.addAll(breachScan.wallBlocks);
                             roomInfo.doorBlocks.addAll(breachScan.doorBlocks);
+
+                            if (breachScan.highestYPos.getY() > this.roomInfo.highestYPos.getY()) {
+                                this.roomInfo.highestYPos = breachScan.highestYPos;
+                            }
+                            if (breachScan.lowestYPos.getY() < this.roomInfo.lowestYPos.getY()) {
+                                this.roomInfo.lowestYPos = breachScan.lowestYPos;
+                            }
 
                             this.roomBreaches.remove(breachPos);
                         } else {
@@ -86,11 +99,11 @@ public class DarkFountain {
     }
 
     private boolean isRoomFilled(Level level) {
+        boolean isFilled = true;
         for (BlockPos blockPos : roomInfo.roomBlocks){
             if (fillableBlock(level, blockPos)) {
-                return false;
+                isFilled = false;
             } else if (isSolid(level, blockPos)) {
-                System.out.println("Solid Block Found Inside Room, Running Scan For Closed Off Areas.");
                 RoomScanner.ScanResult roomScan = RoomScanner.scan(level, this.FOUNTAIN_POS, false, roomBreaches);
                 if (roomScan != null && !roomScan.roomBlocks.isEmpty()) {
                     this.roomInfo = roomScan;
@@ -105,7 +118,7 @@ public class DarkFountain {
             }
         }
 
-        return true;
+        return isFilled;
     }
 
     private List<BlockPos> getRoomBreaches(Level level) {
@@ -132,7 +145,7 @@ public class DarkFountain {
     private void darknessSpread(Level level) {
         int spreadAmount = Integer.min(getSpreadAmount(level), 8);
         for (int i = 0; i < spreadAmount; i++) {
-            while (!fillableBlock(level, currentBlock)) {
+            while (!fillableBlock(level, currentBlock) || !isBlockReachable(level, currentBlock)) {
                 currentBlock = getNextBlock(level);
             }
 
@@ -155,7 +168,7 @@ public class DarkFountain {
                 .filter((blockPos -> fillableBlock(level, blockPos) && isBlockReachable(level, blockPos)))
                 .toList();
 
-        return Integer.max(availableBlocks.size() / 5, randInt(1, 3));
+        return Integer.max(availableBlocks.size() / 5, 1);
     }
 
     private boolean fillableBlock(Level level, BlockPos blockPos) {
@@ -167,7 +180,7 @@ public class DarkFountain {
     }
 
     private BlockPos getNextBlock(Level level) {
-        if (fillableBlock(level, currentBlock.relative(Direction.UP))) {
+        if (fillableBlock(level, currentBlock.relative(Direction.UP)) && isBlockReachable(level, currentBlock.relative(Direction.UP))) {
             return currentBlock.relative(Direction.UP);
         } else {
             List<BlockPos> currentLayer = getYLayer(currentBlock.getY());
@@ -179,8 +192,8 @@ public class DarkFountain {
                 return possibleBlocks.isEmpty() ?
                         currentBlock.relative(Direction.DOWN) :
                         possibleBlocks.get(randInt(0, possibleBlocks.size() - 1));
-            } else if (currentBlock.getY() < roomInfo.lowestYLevel - 1) {
-                return FOUNTAIN_POS;
+            } else if (currentBlock.getY() < roomInfo.lowestYPos.getY() - 1) {
+                return roomInfo.highestYPos; //roomInfo.highestYPos
             } else {
                 return currentBlock.relative(Direction.DOWN);
             }
