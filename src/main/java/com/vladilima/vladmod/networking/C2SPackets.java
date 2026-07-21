@@ -14,6 +14,7 @@ public class C2SPackets {
     }
 
     public static void register(RegisterPayloadHandlersEvent event) {
+        VladMod.LOGGER.info("Registering C2S Packets...");
         PayloadRegistrar registrar = event.registrar("1");
 
         registrar.playToServer(

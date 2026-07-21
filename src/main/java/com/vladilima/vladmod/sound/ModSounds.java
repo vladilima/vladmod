@@ -23,6 +23,7 @@ public class ModSounds {
     }
 
     public static void register(IEventBus eventBus) {
+        VladMod.LOGGER.info("Registering Sounds...");
         SOUND_EVENTS.register(eventBus);
     }
 }

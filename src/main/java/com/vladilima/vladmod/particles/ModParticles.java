@@ -19,6 +19,7 @@ public class ModParticles {
     );
 
     public static void register(IEventBus eventBus) {
+        VladMod.LOGGER.info("Registering Particles...");
         PARTICLE_TYPES.register(eventBus);
     }
 }

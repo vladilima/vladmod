@@ -26,6 +26,7 @@ public class ModItems {
 
 
     public static void register(IEventBus eventBus) {
+        VladMod.LOGGER.info("Registering Items...");
         ITEMS.register(eventBus);
     }
 }

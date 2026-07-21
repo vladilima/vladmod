@@ -19,6 +19,7 @@ public class ModEntities {
                     .sized(.75f, 1.85f).build("star_platinum"));
 
     public static void register(IEventBus eventBus) {
+        VladMod.LOGGER.info("Registering Entities...");
         ENTITY_TYPES.register(eventBus);
     }
 }

@@ -23,6 +23,7 @@ public class ModBlockEntities {
 
 
     public static void register(IEventBus eventBus) {
+        VladMod.LOGGER.info("Registering Block Entities...");
         BLOCK_ENTITIES.register(eventBus);
     }
 }

@@ -38,6 +38,7 @@ public class ModBlocks {
     );
 
     public static void register(IEventBus eventBus) {
+        VladMod.LOGGER.info("Registering Blocks...");
         BLOCKS.register(eventBus);
     }
 }

@@ -52,34 +52,18 @@ public class VladMod {
         NeoForge.EVENT_BUS.register(new ServerEvents());
 
         // VladMod Registries
-        LOGGER.info("Registering Items...");
         ModItems.register(modEventBus);
-
-        LOGGER.info("Registering Blocks...");
         ModBlocks.register(modEventBus);
-
-        LOGGER.info("Registering Block Entities...");
         ModBlockEntities.register(modEventBus);
-
-        LOGGER.info("Registering Creative Tabs...");
-        CREATIVE_MODE_TABS.register(modEventBus);
-
-        LOGGER.info("Registering Entities...");
         ModEntities.register(modEventBus);
-
-        LOGGER.info("Registering Sounds...");
         ModSounds.register(modEventBus);
-
-        LOGGER.info("Registering Attachments...");
         ModAttachmentTypes.register(modEventBus);
-
-        LOGGER.info("Registering Particles...");
         ModParticles.register(modEventBus);
 
         modEventBus.addListener(C2SPackets::register);
 
-//        // Register the item to a creative tab
-//        modEventBus.addListener(this::addCreative);
+        VladMod.LOGGER.info("Registering Creative Tabs...");
+        CREATIVE_MODE_TABS.register(modEventBus);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
