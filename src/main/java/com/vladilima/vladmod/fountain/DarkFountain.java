@@ -29,13 +29,13 @@ public class DarkFountain {
 
     DarkFountain (RoomScanner.ScanResult scan) {
         this.roomInfo = scan;
-        this.FOUNTAIN_POS = scan.roomBlocks.getFirst();
+        this.FOUNTAIN_POS = scan.originPos;
         this.currentBlock = FOUNTAIN_POS;
     }
 
     DarkFountain (RoomScanner.ScanResult scan, int ticksAlive) {
         this.roomInfo = scan;
-        this.FOUNTAIN_POS = scan.roomBlocks.getFirst();
+        this.FOUNTAIN_POS = scan.originPos;
         this.currentBlock = FOUNTAIN_POS;
 
         this.ticksAlive = ticksAlive;
@@ -46,12 +46,7 @@ public class DarkFountain {
     public void tick(Level level) {
         if (!level.isClientSide()) {
             if (this.ticksAlive == 0) {
-                if (level.setBlockAndUpdate(currentBlock, ModBlocks.DARKNESS.get().defaultBlockState())) {
-                    DarknessBlockEntity newDarkness = (DarknessBlockEntity) level.getBlockEntity(currentBlock);
-                    if (newDarkness != null) {
-                        newDarkness.fountain = this;
-                    }
-                };
+                setInitialPosition(level);
             }
 
             if (ticksToSpread <= 0) {
@@ -96,6 +91,22 @@ public class DarkFountain {
             ticksToSpread--;
             ticksAlive++;
         }
+    }
+
+    private void setInitialPosition(Level level) {
+        BlockPos startPos = this.FOUNTAIN_POS;
+        BlockPos blockAbove = startPos.relative(Direction.UP);
+        while (level.isEmptyBlock(blockAbove)) {
+            startPos = blockAbove;
+            blockAbove = startPos.relative(Direction.UP);
+        }
+
+        // Place initial darkness block
+        if (level.setBlockAndUpdate(startPos, ModBlocks.DARKNESS.get().defaultBlockState())) {
+            DarknessBlockEntity newDarkness = (DarknessBlockEntity) level.getBlockEntity(startPos);
+            assert newDarkness != null;
+            newDarkness.fountain = this;
+        };
     }
 
     private boolean isRoomFilled(Level level) {

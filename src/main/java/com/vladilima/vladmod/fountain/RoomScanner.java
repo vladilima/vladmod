@@ -24,11 +24,7 @@ public class RoomScanner {
         List<BlockPos> doorBlocks = new ArrayList<>();
 
         LinkedList<BlockPos> blockQueue = new LinkedList<>();
-        if (ignoreDarkness) {
-            blockQueue.add(creationPos);
-        } else {
-            blockQueue.add(findStartPosition(level, creationPos));
-        }
+        blockQueue.add(creationPos);
 
         BlockPos checkingBlock;
 
@@ -65,17 +61,7 @@ public class RoomScanner {
             }
         }
 
-        return new ScanResult(roomBlocks, wallBlocks, doorBlocks);
-    }
-
-    private static BlockPos findStartPosition(Level level, BlockPos creationPos) {
-        BlockPos startPos = creationPos;
-        BlockPos blockAbove = startPos.relative(Direction.UP);
-        while (level.isEmptyBlock(blockAbove)) {
-            startPos = blockAbove;
-            blockAbove = startPos.relative(Direction.UP);
-        }
-        return startPos;
+        return new ScanResult(roomBlocks, wallBlocks, doorBlocks, creationPos);
     }
 
     public static class ScanResult {
@@ -87,13 +73,18 @@ public class RoomScanner {
         public List<BlockPos> wallBlocks;
         public List<BlockPos> doorBlocks;
 
+        private static final String ORIGIN_POS = "origin_pos";
+
+        public BlockPos originPos;
         public BlockPos lowestYPos;
         public BlockPos highestYPos;
 
-        public ScanResult(List<BlockPos> roomBlocks, List<BlockPos> wallBlocks, List<BlockPos> doorBlocks) {
+        public ScanResult(List<BlockPos> roomBlocks, List<BlockPos> wallBlocks, List<BlockPos> doorBlocks, BlockPos creationPos) {
             this.roomBlocks = roomBlocks;
             this.wallBlocks = wallBlocks;
             this.doorBlocks = doorBlocks;
+
+            this.originPos = creationPos;
 
             if (roomBlocks != null && !roomBlocks.isEmpty()) {
                 List<BlockPos> sortedByY = roomBlocks.stream().sorted((a, b) -> (int) (a.getY() - b.getY())).toList();
@@ -125,6 +116,8 @@ public class RoomScanner {
             }
             tag.put(DOOR_BLOCKS, doorBlocks);
 
+            tag.put(ORIGIN_POS, NbtUtils.writeBlockPos(this.originPos));
+
             return tag;
         }
 
@@ -144,7 +137,9 @@ public class RoomScanner {
                 doorBlocks.add(NbtUtils.readBlockPos((CompoundTag) t, DOOR_BLOCKS).get());
             }
 
-            return new ScanResult(roomBlocks, wallBlocks, doorBlocks);
+            BlockPos originPos = NbtUtils.readBlockPos(tag, ORIGIN_POS).get();
+
+            return new ScanResult(roomBlocks, wallBlocks, doorBlocks, originPos);
         }
     }
 }
