@@ -1,7 +1,7 @@
 package com.vladilima.vladmod.worldgen;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.blocks.ModBlocks;
+import com.vladilima.vladmod.registries.ModBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.features.FeatureUtils;

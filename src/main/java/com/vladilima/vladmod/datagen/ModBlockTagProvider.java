@@ -1,7 +1,7 @@
 package com.vladilima.vladmod.datagen;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.blocks.ModBlocks;
+import com.vladilima.vladmod.registries.ModBlocks;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;

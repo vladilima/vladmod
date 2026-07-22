@@ -1,4 +1,4 @@
-package com.vladilima.vladmod.sound;
+package com.vladilima.vladmod.registries;
 
 import com.vladilima.vladmod.VladMod;
 import net.minecraft.core.registries.BuiltInRegistries;

@@ -1,7 +1,7 @@
 package com.vladilima.vladmod.datagen;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.items.ModItems;
+import com.vladilima.vladmod.registries.ModItems;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;

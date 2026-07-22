@@ -1,7 +1,7 @@
 package com.vladilima.vladmod.datagen;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.items.ModItems;
+import com.vladilima.vladmod.registries.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;

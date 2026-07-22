@@ -1,14 +1,8 @@
 package com.vladilima.vladmod;
 
-import com.vladilima.vladmod.attachments.ModAttachmentTypes;
-import com.vladilima.vladmod.blocks.ModBlocks;
-import com.vladilima.vladmod.blocks.entity.ModBlockEntities;
-import com.vladilima.vladmod.entity.ModEntities;
+import com.vladilima.vladmod.registries.*;
 import com.vladilima.vladmod.event.ServerEvents;
-import com.vladilima.vladmod.items.ModItems;
 import com.vladilima.vladmod.networking.C2SPackets;
-import com.vladilima.vladmod.particles.ModParticles;
-import com.vladilima.vladmod.sound.ModSounds;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -59,8 +53,7 @@ public class VladMod {
         ModSounds.register(modEventBus);
         ModAttachmentTypes.register(modEventBus);
         ModParticles.register(modEventBus);
-
-        modEventBus.addListener(C2SPackets::register);
+        ModPackets.register(modEventBus);
 
         VladMod.LOGGER.info("Registering Creative Tabs...");
         CREATIVE_MODE_TABS.register(modEventBus);

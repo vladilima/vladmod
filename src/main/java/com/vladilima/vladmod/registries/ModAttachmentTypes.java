@@ -1,6 +1,7 @@
-package com.vladilima.vladmod.attachments;
+package com.vladilima.vladmod.registries;
 
 import com.vladilima.vladmod.VladMod;
+import com.vladilima.vladmod.attachments.DarkFountainsAttachment;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;

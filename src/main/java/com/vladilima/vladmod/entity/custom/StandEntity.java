@@ -1,6 +1,6 @@
 package com.vladilima.vladmod.entity.custom;
 
-import com.vladilima.vladmod.sound.ModSounds;
+import com.vladilima.vladmod.registries.ModSounds;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;

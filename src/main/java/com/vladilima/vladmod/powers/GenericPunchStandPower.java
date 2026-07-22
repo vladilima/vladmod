@@ -1,7 +1,7 @@
 package com.vladilima.vladmod.powers;
 
 import com.vladilima.vladmod.entity.custom.StandEntity;
-import com.vladilima.vladmod.sound.ModSounds;
+import com.vladilima.vladmod.registries.ModSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -10,7 +10,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class GenericPunchStandPower {
     StandEntity stand;

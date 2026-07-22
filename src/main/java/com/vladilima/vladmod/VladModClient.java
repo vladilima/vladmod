@@ -1,12 +1,11 @@
 package com.vladilima.vladmod;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.vladilima.vladmod.entity.ModEntities;
+import com.vladilima.vladmod.registries.ModEntities;
 import com.vladilima.vladmod.entity.client.StarPlatinumRenderer;
-import com.vladilima.vladmod.entity.custom.StarPlatinum;
 import com.vladilima.vladmod.networking.c2s_payloads.KeyMappingInputPacket;
 import com.vladilima.vladmod.particles.DarknessParticle;
-import com.vladilima.vladmod.particles.ModParticles;
+import com.vladilima.vladmod.registries.ModParticles;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -26,9 +25,6 @@ import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
-
-import java.util.Dictionary;
-import java.util.Map;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = VladMod.MOD_ID, dist = Dist.CLIENT)

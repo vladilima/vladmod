@@ -1,6 +1,8 @@
-package com.vladilima.vladmod.blocks;
+package com.vladilima.vladmod.registries;
 
 import com.vladilima.vladmod.VladMod;
+import com.vladilima.vladmod.blocks.DarknessBlock;
+import com.vladilima.vladmod.blocks.ExpBerryBushBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;

@@ -2,7 +2,7 @@ package com.vladilima.vladmod.datagen;
 
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.blocks.ExpBerryBushBlock;
-import com.vladilima.vladmod.blocks.ModBlocks;
+import com.vladilima.vladmod.registries.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.SweetBerryBushBlock;

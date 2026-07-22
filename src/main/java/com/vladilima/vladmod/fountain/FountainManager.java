@@ -2,13 +2,11 @@ package com.vladilima.vladmod.fountain;
 
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.attachments.DarkFountainsAttachment;
-import com.vladilima.vladmod.blocks.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FountainManager {
 

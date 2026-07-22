@@ -1,6 +1,6 @@
 package com.vladilima.vladmod.mixin;
 
-import com.vladilima.vladmod.entity.ModEntities;
+import com.vladilima.vladmod.registries.ModEntities;
 import com.vladilima.vladmod.entity.custom.StandEntity;
 import com.vladilima.vladmod.entity.custom.StarPlatinum;
 import com.vladilima.vladmod.powers.StandUser;

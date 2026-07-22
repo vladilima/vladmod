@@ -1,23 +1,18 @@
 package com.vladilima.vladmod.blocks.entity;
 
-import com.vladilima.vladmod.blocks.ModBlocks;
+import com.vladilima.vladmod.registries.ModBlockEntities;
+import com.vladilima.vladmod.registries.ModBlocks;
 import com.vladilima.vladmod.fountain.DarkFountain;
-import com.vladilima.vladmod.particles.ModParticles;
+import com.vladilima.vladmod.registries.ModParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.util.List;
 import java.util.Random;

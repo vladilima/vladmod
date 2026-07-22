@@ -1,7 +1,10 @@
-package com.vladilima.vladmod.items;
+package com.vladilima.vladmod.registries;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.blocks.ModBlocks;
+import com.vladilima.vladmod.items.ExpBerryItem;
+import com.vladilima.vladmod.items.FountainMakerItem;
+import com.vladilima.vladmod.items.NetherStarArrowItem;
+import com.vladilima.vladmod.items.StandArrowItem;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;

@@ -1,7 +1,7 @@
 package com.vladilima.vladmod.datagen;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.particles.ModParticles;
+import com.vladilima.vladmod.registries.ModParticles;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;

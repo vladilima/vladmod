@@ -1,6 +1,6 @@
 package com.vladilima.vladmod.entity.projectile;
 
-import com.vladilima.vladmod.items.ModItems;
+import com.vladilima.vladmod.registries.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;

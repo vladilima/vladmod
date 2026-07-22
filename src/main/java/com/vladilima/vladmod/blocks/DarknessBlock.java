@@ -1,32 +1,22 @@
 package com.vladilima.vladmod.blocks;
 
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
-import com.vladilima.vladmod.blocks.entity.ModBlockEntities;
+import com.vladilima.vladmod.registries.ModBlockEntities;
 import com.vladilima.vladmod.darkworld.DimensionManager;
-import com.vladilima.vladmod.particles.DarknessParticle;
-import com.vladilima.vladmod.particles.ModParticles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.DimensionTransition;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class DarknessBlock extends Block implements EntityBlock {

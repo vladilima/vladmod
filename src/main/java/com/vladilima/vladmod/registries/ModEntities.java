@@ -1,4 +1,4 @@
-package com.vladilima.vladmod.entity;
+package com.vladilima.vladmod.registries;
 
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.entity.custom.StarPlatinum;

@@ -1,6 +1,6 @@
 package com.vladilima.vladmod.blocks;
 
-import com.vladilima.vladmod.items.ModItems;
+import com.vladilima.vladmod.registries.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -19,7 +19,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class ExpBerryBushBlock extends SweetBerryBushBlock {
-    protected ExpBerryBushBlock(Properties properties) { super(properties); }
+    public ExpBerryBushBlock(Properties properties) { super(properties); }
 
     @Override
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {

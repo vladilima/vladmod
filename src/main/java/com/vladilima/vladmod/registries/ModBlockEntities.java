@@ -1,11 +1,9 @@
-package com.vladilima.vladmod.blocks.entity;
+package com.vladilima.vladmod.registries;
 
-import com.mojang.datafixers.types.Type;
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.blocks.ModBlocks;
+import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;

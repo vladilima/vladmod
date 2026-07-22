@@ -1,4 +1,4 @@
-package com.vladilima.vladmod.particles;
+package com.vladilima.vladmod.registries;
 
 import com.vladilima.vladmod.VladMod;
 import net.minecraft.core.particles.ParticleType;
