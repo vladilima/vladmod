@@ -1,8 +1,13 @@
 package com.vladilima.vladmod;
 
+import com.vladilima.vladmod.darkworld.DarkWorldTheme;
 import com.vladilima.vladmod.registries.*;
 import com.vladilima.vladmod.event.ServerEvents;
 import com.vladilima.vladmod.networking.C2SPackets;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.WorldDimensions;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -42,8 +47,9 @@ public class VladMod {
         // Note that this is necessary if and only if we want *this* class (vladmod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
-
         NeoForge.EVENT_BUS.register(new ServerEvents());
+
+        modEventBus.addListener(ModCustomRegistries::registerDatapackRegistries);
 
         // VladMod Registries
         ModItems.register(modEventBus);
@@ -78,6 +84,13 @@ public class VladMod {
     public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts
         LOGGER.info("HELLO from server starting");
+
+        event.getServer().getLevel(Level.OVERWORLD)
+                .registryAccess().lookup(DarkWorldTheme.REGISTRY_KEY).get()
+                .listElements().forEach(theme -> {
+                    System.out.println("Dark World Theme: " + theme.value().theme());
+                });
+
     }
 
 }
