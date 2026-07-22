@@ -3,6 +3,7 @@ package com.vladilima.vladmod.fountain;
 import com.vladilima.vladmod.blocks.DarknessBlock;
 import com.vladilima.vladmod.blocks.ModBlocks;
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
+import com.vladilima.vladmod.darkworld.DarkWorld;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -25,7 +26,10 @@ public class DarkFountain {
     private BlockPos currentBlock;
     List<BlockPos> roomBreaches = new ArrayList<>();
 
+    public boolean isFilled = false;
     private int ticksAlive = 0;
+
+    private DarkWorld darkWorld;
 
     DarkFountain (RoomScanner.ScanResult scan) {
         this.roomInfo = scan;
@@ -52,6 +56,10 @@ public class DarkFountain {
             if (ticksToSpread <= 0) {
                 if (!isRoomFilled(level)) {
                     darknessSpread(level);
+                } else if (!this.isFilled) {
+                    System.out.println("Filled Fountain Room");
+                    this.isFilled = true;
+                    DarkWorld.buildDarkWorld(level, roomInfo);
                 }
 
                 List<BlockPos> foundBreaches = getRoomBreaches(level);
@@ -110,10 +118,10 @@ public class DarkFountain {
     }
 
     private boolean isRoomFilled(Level level) {
-        boolean isFilled = true;
+        boolean allFillable = true;
         for (BlockPos blockPos : roomInfo.roomBlocks){
             if (fillableBlock(level, blockPos)) {
-                isFilled = false;
+                allFillable = false;
             } else if (isSolid(level, blockPos)) {
                 RoomScanner.ScanResult roomScan = RoomScanner.scan(level, this.FOUNTAIN_POS, false, roomBreaches);
                 if (roomScan != null && !roomScan.roomBlocks.isEmpty()) {
@@ -129,7 +137,7 @@ public class DarkFountain {
             }
         }
 
-        return isFilled;
+        return allFillable;
     }
 
     private List<BlockPos> getRoomBreaches(Level level) {

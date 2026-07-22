@@ -2,6 +2,7 @@ package com.vladilima.vladmod.blocks;
 
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
 import com.vladilima.vladmod.blocks.entity.ModBlockEntities;
+import com.vladilima.vladmod.darkworld.DimensionManager;
 import com.vladilima.vladmod.particles.DarknessParticle;
 import com.vladilima.vladmod.particles.ModParticles;
 import net.minecraft.core.BlockPos;
@@ -9,7 +10,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -18,11 +21,13 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DarknessBlock extends Block implements EntityBlock {
     public DarknessBlock(Properties properties) {
@@ -50,38 +55,24 @@ public class DarknessBlock extends Block implements EntityBlock {
         return createTickerHelper(blockEntity, ModBlockEntities.DARKNESS_BLOCK_ENTITY.get(), DarknessBlockEntity::tick);
     }
 
-//    List<Direction> directionList = List.of(Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
-//    @Override
-//    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-//        for (Direction direction : directionList) {
-//            BlockPos relativeBlock = pos.relative(direction);
-//            if (level.isEmptyBlock(relativeBlock) && !(level.getBlockState(relativeBlock) == ModBlocks.DARKNESS.get().defaultBlockState())) {
-//                Vec3 pPos = pos.getCenter();
-//                Vec3i dirVector = direction.getNormal();
-//                level.addParticle(
-//                        ModParticles.DARKNESS_PARTICLES.get(),
-//                        pPos.x() + (double) dirVector.getX() / 2,
-//                        pPos.y() + (double) dirVector.getY() / 2,
-//                        pPos.z() + (double) dirVector.getZ() / 2,
-//                        dirVector.getX() * 500,
-//                        dirVector.getY(),
-//                        dirVector.getZ() * 500
-//                );
-//            }
-//        }
-//    }
+    @Override
+    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (!level.isClientSide()) {
+            DarknessBlockEntity blockEntity = (DarknessBlockEntity) level.getBlockEntity(pos);
 
+            if (blockEntity.fountain != null && blockEntity.fountain.isFilled) {
+                ServerLevel darkWorldServerLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
+                assert darkWorldServerLevel != null;
 
-//    public static final MapCodec<DarknessBlock> CODEC = simpleCodec(DarknessBlock::new);
-//    @Override
-//    protected MapCodec<? extends BaseEntityBlock> codec() {
-//        return CODEC;
-//    }
+                DimensionTransition dimTransition = new DimensionTransition(darkWorldServerLevel,
+                        pos.getCenter(), entity.getDeltaMovement(), entity.getXRot(), entity.getYRot(),
+                        DimensionTransition.DO_NOTHING
+                );
 
-//    @Override
-//    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-//        super.entityInside(state, level, pos, entity);
-//    }
+                entity.changeDimension(dimTransition);
+            }
+        }
+    }
 
     @Override
     protected boolean skipRendering(BlockState state, BlockState adjacentState, Direction direction) {
