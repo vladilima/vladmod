@@ -1,0 +1,20 @@
+{
+  "type": "vladmod:dark_world",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "vladmod:dark_world",
+      "lakes": false,
+      "features": false,
+      "layers": [
+        {
+          "block": "minecraft:bedrock",
+          "height": 1
+        }
+      ],
+      "structures": {
+        "structures": {}
+      }
+    }
+  }
+}
