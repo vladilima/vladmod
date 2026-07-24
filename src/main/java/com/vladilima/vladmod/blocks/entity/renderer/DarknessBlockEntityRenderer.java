@@ -137,7 +137,6 @@ public class DarknessBlockEntityRenderer implements BlockEntityRenderer<Darkness
 
 
     private boolean isTouchingDarknessBlock(DarknessBlockEntity blockEntity, Direction direction) {
-        // Check if adjacent block in this direction is an outline block
         if (blockEntity.getLevel() == null) return false;
 
         BlockEntity adjacent = blockEntity.getLevel()
