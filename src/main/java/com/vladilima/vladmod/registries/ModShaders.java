@@ -20,16 +20,11 @@ public class ModShaders {
     static void onRegisterShaders(RegisterShadersEvent event) throws IOException {
         ResourceProvider resourceProvider = event.getResourceProvider();
 
-        try {
-            darknessBlockShader = new ShaderInstance(
-                    resourceProvider,
-                    ResourceLocation.fromNamespaceAndPath(VladMod.MOD_ID, "darkness_block"),
-                    DefaultVertexFormat.POSITION_COLOR
-            );
-        } catch (Exception e) {
-            System.err.println("[VladMod] ERROR: Failed to load darkness_block shader!");
-            e.printStackTrace();
-        }
+        darknessBlockShader = new ShaderInstance(
+                resourceProvider,
+                ResourceLocation.fromNamespaceAndPath(VladMod.MOD_ID, "darkness_block"),
+                DefaultVertexFormat.POSITION_COLOR
+        );
 
         if (darknessBlockShader != null) {
             event.registerShader(darknessBlockShader, shader -> darknessBlockShader = shader);

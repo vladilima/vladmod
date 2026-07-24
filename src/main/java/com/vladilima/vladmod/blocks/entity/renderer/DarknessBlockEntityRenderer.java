@@ -31,18 +31,14 @@ public class DarknessBlockEntityRenderer implements BlockEntityRenderer<Darkness
                MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         Matrix4f pose = poseStack.last().pose();
 
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(
-                ModRenderTypes.darknessBlock(ModShaders::getDarknessBlockShader)
-        );
-
         for (Direction direction : Direction.values()) {
             if (!isTouchingDarknessBlock(blockEntity, direction)) {
-                renderFaceOutline(blockEntity, pose, vertexConsumer, direction);
+                renderFaceOutline(blockEntity, pose, bufferSource, direction);
             }
         }
     }
 
-    private void renderFaceOutline(DarknessBlockEntity blockEntity, Matrix4f pose, VertexConsumer consumer, Direction direction) {
+    private void renderFaceOutline(DarknessBlockEntity blockEntity, Matrix4f pose, MultiBufferSource bufferSource, Direction direction) {
         BlockPos adjacent = blockEntity.getBlockPos().relative(direction);
         if (!blockEntity.getLevel().getBlockState(adjacent).is(BlockTags.DOORS)) {
             Vector3f[] vertices = FACE_VERTICES.get(direction);
@@ -54,6 +50,10 @@ public class DarknessBlockEntityRenderer implements BlockEntityRenderer<Darkness
                 vertex.mul(0.999f);
                 vertex.add(0.0005f, 0.0005f, 0.0005f);
 
+                VertexConsumer consumer = bufferSource.getBuffer(
+                        ModRenderTypes.darknessBlock(ModShaders::getDarknessBlockShader)
+                );
+
                 addVertex(pose, consumer, vertex, true, i);
             }
 
@@ -61,6 +61,10 @@ public class DarknessBlockEntityRenderer implements BlockEntityRenderer<Darkness
             for (int i = 0; i < vertices.length; i++) {
                 Direction dir1 = vertexDirs[i];
                 Direction dir2 = vertexDirs[(i + 1) % 4];
+
+                VertexConsumer consumer = bufferSource.getBuffer(
+                        RenderType.debugQuads()
+                );
 
                 int[] innerPos = positionInnerVertex(blockEntity, direction, dir1, dir2);
 
@@ -118,10 +122,17 @@ public class DarknessBlockEntityRenderer implements BlockEntityRenderer<Darkness
     }
 
     private void addVertex(Matrix4f pose, VertexConsumer consumer, Vector3f position, boolean isBorder, int uvIndex) {
-        int color = isBorder ? 0xFFFFFFFF : 0xFF000000;  // White for border, black for inner
+        int borderChannel = isBorder ? 255 : 0;
+        int middleChannel = isBorder ? 0 : 255;
+
+        float u = (uvIndex % 2) * 1f;
+        float v = (((float) uvIndex / 2) % 2);
 
         consumer.addVertex(pose, position.x, position.y, position.z)
-                .setColor(color);
+                .setColor(borderChannel, 0, 0, middleChannel)
+                .setUv(u, v)
+                .setLight(0xF000F0)
+                .setNormal(0, 0, 0);
     }
 
 

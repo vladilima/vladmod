@@ -17,13 +17,12 @@ public class ModRenderTypes {
                     "darkness_block",
                     DefaultVertexFormat.POSITION_COLOR,
                     VertexFormat.Mode.QUADS,
-                    1536,
+                    256,
                     false,
                     true,
                     RenderType.CompositeState.builder()
-                            .setShaderState(new RenderStateShard.ShaderStateShard(() -> shaderSupplier.get()))
+                            .setShaderState(new RenderStateShard.ShaderStateShard(shaderSupplier))
                             .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
-                            .setCullState(RenderStateShard.NO_CULL)
                             .createCompositeState(false)
             );
         }
