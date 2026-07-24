@@ -1,6 +1,6 @@
-package com.vladilima.vladmod;
+package com.vladilima.vladmod.registries;
 
-import com.vladilima.vladmod.registries.ModEntities;
+import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.entity.client.StarPlatinumModel;
 import com.vladilima.vladmod.entity.custom.StarPlatinum;
 import net.neoforged.bus.api.SubscribeEvent;

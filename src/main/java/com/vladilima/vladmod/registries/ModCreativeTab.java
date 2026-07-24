@@ -1,6 +1,6 @@
-package com.vladilima.vladmod;
+package com.vladilima.vladmod.registries;
 
-import com.vladilima.vladmod.registries.ModItems;
+import com.vladilima.vladmod.VladMod;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
