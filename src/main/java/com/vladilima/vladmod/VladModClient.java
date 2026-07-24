@@ -1,6 +1,7 @@
 package com.vladilima.vladmod;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.vladilima.vladmod.registries.ModBlockEntityRenderers;
 import com.vladilima.vladmod.registries.ModEntities;
 import com.vladilima.vladmod.entity.client.StarPlatinumRenderer;
 import com.vladilima.vladmod.networking.c2s_payloads.KeyMappingInputPacket;
@@ -16,6 +17,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -85,5 +87,10 @@ public class VladModClient {
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         VladMod.LOGGER.info("Registering Particle Providers (Clientside)...");
         event.registerSpriteSet(ModParticles.DARKNESS_PARTICLES.get(), DarknessParticle.Provider::new);
+    }
+
+    @SubscribeEvent
+    public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        ModBlockEntityRenderers.register(event);
     }
 }
