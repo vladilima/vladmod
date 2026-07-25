@@ -1,5 +1,6 @@
 package com.vladilima.vladmod.fountain;
 
+import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.registries.ModBlocks;
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
 import com.vladilima.vladmod.darkworld.DarkWorld;
@@ -52,7 +53,7 @@ public class DarkFountain {
             if (ticksToSpread <= 0) {
                 if (!isRoomFilled(level)) {
                     darknessSpread(level);
-                } else if (!this.isFilled) {
+                } else if (!this.isFilled) { // Room filled for the first time
                     System.out.println("Filled Fountain Room");
                     this.isFilled = true;
                     new DarkWorld().buildDarkWorld(level, roomInfo);
@@ -160,8 +161,15 @@ public class DarkFountain {
     private void darknessSpread(Level level) {
         int spreadAmount = Integer.min(getSpreadAmount(level), 8);
         for (int i = 0; i < spreadAmount; i++) {
+            int attempts = 0; // Attempts at finding reachable block
             while (!fillableBlock(level, currentBlock) || !isBlockReachable(level, currentBlock)) {
                 currentBlock = getNextBlock(level);
+                attempts++;
+                if (attempts >= 50) {
+                    FountainManager.removeFountain(level, this);
+                    VladMod.LOGGER.error("Exceeded Darkness Spread attempts, deleting Fountain.");
+                    return;
+                };
             }
 
             if (roomInfo.roomBlocks.contains(currentBlock)) {
