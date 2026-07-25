@@ -55,7 +55,7 @@ public class DarkFountain {
                 } else if (!this.isFilled) {
                     System.out.println("Filled Fountain Room");
                     this.isFilled = true;
-                    DarkWorld.buildDarkWorld(level, roomInfo);
+                    new DarkWorld().buildDarkWorld(level, roomInfo);
                 }
 
                 List<BlockPos> foundBreaches = getRoomBreaches(level);
