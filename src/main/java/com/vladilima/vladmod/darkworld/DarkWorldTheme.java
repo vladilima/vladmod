@@ -7,22 +7,23 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
-public class DarkWorldTheme {
+import java.util.List;
+
+public record DarkWorldTheme(float requiredWeight, List<BlockTags> blockTags) {
     public static final ResourceKey<Registry<DarkWorldTheme>> REGISTRY_KEY = ResourceKey.createRegistryKey(
             ResourceLocation.fromNamespaceAndPath(
                     VladMod.MOD_ID, "dark_world/theme"
             ));
 
-    public DarkWorldTheme(String theme) {
-        this.theme = theme;
-    }
-
-    public String theme;
-    public String theme() {
-        return theme;
-    };
-
     public static final Codec<DarkWorldTheme> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.STRING.fieldOf("theme").forGetter(DarkWorldTheme::theme)
+            Codec.FLOAT.fieldOf("required_weight").forGetter(DarkWorldTheme::requiredWeight),
+            BlockTags.CODEC.listOf().fieldOf("block_tags").forGetter(DarkWorldTheme::blockTags)
     ).apply(instance, DarkWorldTheme::new));
+
+    public record BlockTags(ResourceLocation tag, float weight) {
+        public static final Codec<BlockTags> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ResourceLocation.CODEC.fieldOf("tag").forGetter(BlockTags::tag),
+                Codec.FLOAT.fieldOf("weight").forGetter(BlockTags::weight)
+        ).apply(instance, BlockTags::new));
+    }
 }

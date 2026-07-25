@@ -1,3 +1,9 @@
 {
-  "theme": "cliffs"
+  "required_weight": 5,
+  "block_tags": [
+    {
+      "tag": "minecraft:base_stone_overworld",
+      "weight": 1
+    }
+  ]
 }
