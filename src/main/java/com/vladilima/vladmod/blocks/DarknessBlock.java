@@ -16,9 +16,12 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+
+import static com.vladilima.vladmod.darkworld.DarkWorld.DARK_WORLD_SIZE;
 
 public class DarknessBlock extends Block implements EntityBlock {
     public DarknessBlock(Properties properties) {
@@ -55,8 +58,14 @@ public class DarknessBlock extends Block implements EntityBlock {
                 ServerLevel darkWorldServerLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
                 assert darkWorldServerLevel != null;
 
+                Vec3 fountainPos = blockEntity.fountain.FOUNTAIN_POS.getCenter();
+                Vec3 relativeToFountain = entity.position().subtract(fountainPos);
+
+                Vec3 darkWorldPos = pos.getCenter().multiply(1, 0, 1).add(0, 4, 0);
+                Vec3 largePos = darkWorldPos.add(relativeToFountain.multiply(DARK_WORLD_SIZE, 1, DARK_WORLD_SIZE));
+
                 DimensionTransition dimTransition = new DimensionTransition(darkWorldServerLevel,
-                        pos.getCenter(), entity.getDeltaMovement(), entity.getXRot(), entity.getYRot(),
+                        largePos, entity.getDeltaMovement(), entity.getYRot(), entity.getXRot(),
                         DimensionTransition.DO_NOTHING
                 );
 

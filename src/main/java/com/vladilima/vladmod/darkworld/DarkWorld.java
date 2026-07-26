@@ -1,31 +1,59 @@
 package com.vladilima.vladmod.darkworld;
 
+import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.fountain.RoomScanner;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.RandomSequence;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 public class DarkWorld {
+
+    public static final int DARK_WORLD_SIZE = 8;
+
     public void buildDarkWorld(Level level, RoomScanner.ScanResult roomInfo) {
         Level darkWorldLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
         assert darkWorldLevel != null;
 
-        // Create rough outline of room by tracing the floor blocks
-        List<BlockPos> floorBlocks = getFloorOfRoom(roomInfo);
-        for (BlockPos block : floorBlocks) {
+        List<BlockPos> darkWorldFloor = new ArrayList<>(Collections.emptyList());
+
+        // Create rough outline of dark world by tracing the floor blocks
+        List<BlockPos> roomFloorBlocks = getFloorOfRoom(roomInfo);
+        for (BlockPos block : roomFloorBlocks) {
             BlockPos relativeToFountain = block.subtract(roomInfo.originPos);
-            BlockPos largePos = block.offset(relativeToFountain.multiply(8));
-            AABB floor = new AABB(largePos).inflate(randInt(8, 24), 0, randInt(8, 24));
+            BlockPos largePos = block.offset(relativeToFountain.multiply(DARK_WORLD_SIZE)).atY(1);
+
+            AABB floor = new AABB(largePos).inflate(randInt(DARK_WORLD_SIZE, DARK_WORLD_SIZE * 3), 0, randInt(DARK_WORLD_SIZE, DARK_WORLD_SIZE * 3));
+            floor = floor.setMaxY(1.5);
+
             BlockPos.betweenClosedStream(floor)
-                    .forEach(blockPos -> darkWorldLevel.setBlockAndUpdate(blockPos, Blocks.STONE.defaultBlockState()));
+                    .filter(blockPos -> !darkWorldFloor.contains(blockPos))
+                    .forEach(blockPos -> darkWorldFloor.add(blockPos.immutable()));
         }
+
+        Optional<BoundingBox> boundingBox = BoundingBox.encapsulatingPositions(darkWorldFloor);
+        if (boundingBox.isPresent()) {
+            AABB darkWorldAreaBox = AABB.of(boundingBox.get());
+            darkWorldAreaBox = darkWorldAreaBox.inflate(2.5, -.5, 2.5);
+
+            BlockPos.betweenClosedStream(darkWorldAreaBox)
+                .filter(blockPos -> !darkWorldFloor.contains(blockPos))
+                .forEach(blockPos -> {
+                    for (int y = 1; y < 2; y++) {
+                        darkWorldLevel.setBlock(blockPos.atY(y), Blocks.REDSTONE_BLOCK.defaultBlockState(), 0);
+                    }
+                });
+
+            darkWorldFloor.forEach(blockPos ->
+                    darkWorldLevel.setBlock(blockPos, Blocks.LAPIS_BLOCK.defaultBlockState(), 0)
+            );
+        } else {
+            VladMod.LOGGER.error("Failed to get Dark World Bounding Box.");
+        }
+
 
 //        BoundingBox bBox = getFountainBB(roomInfo.wallBlocks);
 //        AABB boundingBox = AABB.encapsulatingFullBlocks(bBox.bottomNorthWestPos, bBox.TopSouthEastPos.offset(-1, -1, -1));
