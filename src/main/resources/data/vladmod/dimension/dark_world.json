@@ -9,12 +9,9 @@
       "layers": [
         {
           "block": "minecraft:bedrock",
-          "height": 1
+          "height": 256
         }
-      ],
-      "structures": {
-        "structures": {}
-      }
+      ]
     }
   }
 }

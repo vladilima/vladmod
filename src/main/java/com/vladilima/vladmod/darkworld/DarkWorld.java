@@ -5,14 +5,18 @@ import com.vladilima.vladmod.fountain.RoomScanner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DarkWorld {
 
-    public static final int DARK_WORLD_SIZE = 8;
+    public static final int DARK_WORLD_SIZE = 16;
 
     public void buildDarkWorld(Level level, RoomScanner.ScanResult roomInfo) {
         Level darkWorldLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
@@ -30,26 +34,42 @@ public class DarkWorld {
             floor = floor.setMaxY(1.5);
 
             BlockPos.betweenClosedStream(floor)
-                    .filter(blockPos -> !darkWorldFloor.contains(blockPos))
                     .forEach(blockPos -> darkWorldFloor.add(blockPos.immutable()));
         }
 
         Optional<BoundingBox> boundingBox = BoundingBox.encapsulatingPositions(darkWorldFloor);
         if (boundingBox.isPresent()) {
-            AABB darkWorldAreaBox = AABB.of(boundingBox.get());
-            darkWorldAreaBox = darkWorldAreaBox.inflate(2.5, -.5, 2.5);
+            VladMod.LOGGER.debug("Started Placing Blocks.");
+            AtomicInteger i = new AtomicInteger();
 
-            BlockPos.betweenClosedStream(darkWorldAreaBox)
-                .filter(blockPos -> !darkWorldFloor.contains(blockPos))
-                .forEach(blockPos -> {
-                    for (int y = 1; y < 2; y++) {
-                        darkWorldLevel.setBlock(blockPos.atY(y), Blocks.REDSTONE_BLOCK.defaultBlockState(), 0);
-                    }
-                });
+//            AABB darkWorldAreaBox = AABB.of(boundingBox.get());
+//            darkWorldAreaBox = darkWorldAreaBox.inflate(.5, -.5, .5);
+//            BlockPos.betweenClosedStream(darkWorldAreaBox)
+//                    .filter(blockPos -> !darkWorldFloor.contains(blockPos))
+//                    .forEach(blockPos -> {
+//                        LevelChunk levelChunk = darkWorldLevel.getChunkAt(blockPos);
+//                        for (int y = 1; y < darkWorldLevel.getMaxBuildHeight(); y++) {
+//                            i.addAndGet(1);
+//                            levelChunk.setBlockState(blockPos.atY(y), Blocks.IRON_BLOCK.defaultBlockState(), false);
+//                        }
+//                    });
 
-            darkWorldFloor.forEach(blockPos ->
-                    darkWorldLevel.setBlock(blockPos, Blocks.LAPIS_BLOCK.defaultBlockState(), 0)
-            );
+            List<BlockPos> darkWorldFloorFiltered = darkWorldFloor.stream().distinct().toList();
+
+            darkWorldFloorFiltered.forEach(blockPos -> {
+                LevelChunk levelChunk = darkWorldLevel.getChunkAt(blockPos);
+                for (int y = 1; y < darkWorldLevel.getMaxBuildHeight(); y++) {
+                    LevelChunkSection section = levelChunk.getSection(levelChunk.getSectionIndex(y));
+                    i.addAndGet(1);
+                    setBlockChunkSection(
+                            section,
+                            blockPos,
+                            y <= 63 ? Blocks.IRON_BLOCK.defaultBlockState() : Blocks.AIR.defaultBlockState()
+                    );
+                }
+            });
+
+            VladMod.LOGGER.debug("Finished Placing Blocks. Placed {} Blocks.", i);
         } else {
             VladMod.LOGGER.error("Failed to get Dark World Bounding Box.");
         }
@@ -75,6 +95,17 @@ public class DarkWorld {
         }
 
         return floorBlocks.stream().map(blockPos -> blockPos.atY(roomInfo.lowestYPos.getY())).toList();
+    }
+
+    private static void setBlockChunkSection(LevelChunkSection chunkSection, BlockPos blockPos, BlockState blockState) {
+        int x = blockPos.getX() & 15;
+        int y = blockPos.getX() & 15;
+        int z = blockPos.getZ() & 15;
+        chunkSection.setBlockState(
+                x, y, z,
+                blockState,
+                false
+        );
     }
 
     static Random rand = new Random();
