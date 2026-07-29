@@ -79,21 +79,5 @@ public class VladMod {
     public void onServerStarting(ServerStartingEvent event) {
         // Do something when the server starts
         LOGGER.info("HELLO from server starting");
-
-        // Dark World Theme test
-        event.getServer().getLevel(Level.OVERWORLD)
-                .registryAccess().lookup(DarkWorldTheme.REGISTRY_KEY).get()
-                .listElements().forEach(theme -> {
-                    System.out.println("Dark World Theme: " + theme.getRegisteredName());
-
-                    DarkWorldTheme themeValue = theme.value();
-                    System.out.println("Dark World Theme Weight: " + themeValue.requiredWeight());
-                    List<DarkWorldTheme.BlockTags> blockTag = themeValue.blockTags();
-                    blockTag.forEach(tag -> {
-                        System.out.println("Dark World Theme Block Tag: " + TagKey.create(Registries.BLOCK, tag.tag()));
-                    });
-                });
-
     }
-
 }

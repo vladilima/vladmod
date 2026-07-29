@@ -9,13 +9,14 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
-public record DarkWorldTheme(float requiredWeight, List<BlockTags> blockTags) {
+public record DarkWorldTheme(String generator, float requiredWeight, List<BlockTags> blockTags) {
     public static final ResourceKey<Registry<DarkWorldTheme>> REGISTRY_KEY = ResourceKey.createRegistryKey(
             ResourceLocation.fromNamespaceAndPath(
                     VladMod.MOD_ID, "dark_world/theme"
             ));
 
     public static final Codec<DarkWorldTheme> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.fieldOf("generator").forGetter(DarkWorldTheme::generator),
             Codec.FLOAT.fieldOf("required_weight").forGetter(DarkWorldTheme::requiredWeight),
             BlockTags.CODEC.listOf().fieldOf("block_tags").forGetter(DarkWorldTheme::blockTags)
     ).apply(instance, DarkWorldTheme::new));
