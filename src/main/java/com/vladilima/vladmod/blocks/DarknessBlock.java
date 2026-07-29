@@ -61,7 +61,7 @@ public class DarknessBlock extends Block implements EntityBlock {
                 Vec3 fountainPos = blockEntity.fountain.FOUNTAIN_POS.getCenter();
                 Vec3 relativeToFountain = entity.position().subtract(fountainPos);
 
-                Vec3 darkWorldPos = pos.getCenter().multiply(1, 0, 1).add(0, 4, 0);
+                Vec3 darkWorldPos = pos.getCenter().multiply(1, 0, 1).add(0, 64, 0);
                 Vec3 largePos = darkWorldPos.add(relativeToFountain.multiply(DARK_WORLD_SIZE, 1, DARK_WORLD_SIZE));
 
                 DimensionTransition dimTransition = new DimensionTransition(darkWorldServerLevel,

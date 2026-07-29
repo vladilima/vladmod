@@ -8,7 +8,6 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -32,7 +31,7 @@ public class DarkWorld {
             BlockPos relativeToFountain = block.subtract(roomInfo.originPos);
             BlockPos largePos = block.offset(relativeToFountain.multiply(DARK_WORLD_SIZE)).atY(1);
 
-            AABB floor = new AABB(largePos).inflate(randInt(DARK_WORLD_SIZE, DARK_WORLD_SIZE * 3), 0, randInt(DARK_WORLD_SIZE, DARK_WORLD_SIZE * 3));
+            AABB floor = new AABB(largePos).inflate(GenerationUtils.randInt(DARK_WORLD_SIZE, DARK_WORLD_SIZE * 3), 0, GenerationUtils.randInt(DARK_WORLD_SIZE, DARK_WORLD_SIZE * 3));
             floor = floor.setMaxY(1.5);
 
             BlockPos.betweenClosedStream(floor)
@@ -43,14 +42,14 @@ public class DarkWorld {
 
         Optional<BoundingBox> boundingBox = BoundingBox.encapsulatingPositions(darkWorldArea);
         if (boundingBox.isPresent()) {
-            // Dark World Theme test
             Registry<DarkWorldTheme> darkWorldThemeRegistry = level.registryAccess().registryOrThrow(DarkWorldTheme.REGISTRY_KEY);
 
             // Placeholder Theme + Generator Get (REPLACE WITH THEME CALCULATION)
             DarkWorldTheme theme = darkWorldThemeRegistry.getOptional(ResourceLocation.fromNamespaceAndPath(VladMod.MOD_ID, "cliffs")).orElseThrow();
             Generator generator = getGeneratorFromTheme(theme).orElseThrow();
 
-
+            generator.empty(darkWorldLevel, darkWorldArea);
+            generator.surface(darkWorldLevel, darkWorldArea);
         } else {
             VladMod.LOGGER.error("Failed to get Dark World Bounding Box.");
         }
@@ -80,30 +79,14 @@ public class DarkWorld {
             for (int y = 1; y < darkWorldLevel.getMaxBuildHeight(); y++) {
                 LevelChunkSection section = levelChunk.getSection(levelChunk.getSectionIndex(y));
                 i.addAndGet(1);
-                setBlockChunkSection(
+                GenerationUtils.setBlockChunkSection(
                         section,
-                        blockPos,
+                        blockPos.atY(y),
                         y <= 63 ? Blocks.IRON_BLOCK.defaultBlockState() : Blocks.AIR.defaultBlockState()
                 );
             }
         });
 
         VladMod.LOGGER.debug("Finished Placing Blocks. Placed {} Blocks.", i);
-    }
-
-    private static void setBlockChunkSection(LevelChunkSection chunkSection, BlockPos blockPos, BlockState blockState) {
-        int x = blockPos.getX() & 15;
-        int y = blockPos.getX() & 15;
-        int z = blockPos.getZ() & 15;
-        chunkSection.setBlockState(
-                x, y, z,
-                blockState,
-                false
-        );
-    }
-
-    static Random rand = new Random();
-    public static int randInt(int min, int max) {
-        return rand.nextInt((max - min) + 1) + min;
     }
 }
