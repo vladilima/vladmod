@@ -77,10 +77,9 @@ public class DarkWorld {
         darkWorldArea.forEach(blockPos -> {
             LevelChunk levelChunk = darkWorldLevel.getChunkAt(blockPos);
             for (int y = 1; y < darkWorldLevel.getMaxBuildHeight(); y++) {
-                LevelChunkSection section = levelChunk.getSection(levelChunk.getSectionIndex(y));
                 i.addAndGet(1);
-                GenerationUtils.setBlockChunkSection(
-                        section,
+                GenerationUtils.setBlockAtChunkSection(
+                        levelChunk,
                         blockPos.atY(y),
                         y <= 63 ? Blocks.IRON_BLOCK.defaultBlockState() : Blocks.AIR.defaultBlockState()
                 );

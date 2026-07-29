@@ -2,16 +2,18 @@ package com.vladilima.vladmod.darkworld;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 
 import java.util.Random;
 
 public class GenerationUtils {
-    public static void setBlockChunkSection(LevelChunkSection chunkSection, BlockPos blockPos, BlockState blockState) {
+    public static void setBlockAtChunkSection(LevelChunk chunk, BlockPos blockPos, BlockState blockState) {
+        LevelChunkSection section = chunk.getSection(chunk.getSectionIndex(blockPos.getY()));
         int x = blockPos.getX() & 15;
         int y = blockPos.getY() & 15;
         int z = blockPos.getZ() & 15;
-        chunkSection.setBlockState(
+        section.setBlockState(
                 x, y, z,
                 blockState,
                 false
