@@ -110,7 +110,9 @@ public class CliffsGenerator extends Generator {
                 Util.getRandom(generationArea, level.random).atY(GenerationUtils.randInt(CLIFF_MIN_Y, CLIFF_MAX_Y));
 
         int attempts = 0;
-        while (!isSegmentValid(generationArea, paths, newSegment, prevSegment)) {
+        List<PathSegment> everyPath = new ArrayList<>(List.copyOf(paths));
+        everyPath.addAll(currentPath);
+        while (!isSegmentValid(generationArea, everyPath, newSegment, prevSegment)) {
             int segmentSize = GenerationUtils.randInt(8, 24);
             newSegment.startPos = prevSegment != null ?
                     prevSegment.finishPos :
@@ -129,7 +131,7 @@ public class CliffsGenerator extends Generator {
         return newSegment;
     }
 
-    private boolean isSegmentValid(List<BlockPos> generationArea, List<PathSegment> paths, PathSegment newSegment, PathSegment prevSegment) {
+    private boolean isSegmentValid(List<BlockPos> generationArea, List<PathSegment> everyPath, PathSegment newSegment, PathSegment prevSegment) {
         if (newSegment.finishPos == null || newSegment.direction == null || newSegment.boundingBox == null) {
             return false;
         } else if (prevSegment != null && newSegment.direction == prevSegment.direction.getOpposite()) {
@@ -148,6 +150,12 @@ public class CliffsGenerator extends Generator {
             } else if (!generationArea.contains(BlockPos.containing(bBox.maxX, 1, bBox.maxZ))) {
                 return false;
             } else {
+                for (PathSegment path : everyPath) {
+                    if (path != prevSegment && path.boundingBox.intersects(newSegment.boundingBox)) {
+                        return false;
+                    }
+                }
+
                 return true;
             }
         }
