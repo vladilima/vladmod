@@ -42,7 +42,6 @@ public class VladMod {
         // Note that this is necessary if and only if we want *this* class (vladmod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
-        NeoForge.EVENT_BUS.register(new ServerEvents());
 
         modEventBus.addListener(ModCustomRegistries::registerDatapackRegistries);
 
