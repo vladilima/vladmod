@@ -7,13 +7,16 @@ import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class FountainManager {
 
     public static void makeFountain(Level level, BlockPos startingPos) {
+        Level overworldLevel = Objects.requireNonNull(level.getServer()).getLevel(Level.OVERWORLD);
+
         RoomScanner.ScanResult scanResult = RoomScanner.scan(level, startingPos, false, List.of());
         if (scanResult != null && !scanResult.roomBlocks.isEmpty()) {
-            ArrayList<DarkFountain> darkFountains = level.getData(DarkFountainsAttachment.TYPE);
+            ArrayList<DarkFountain> darkFountains = overworldLevel.getData(DarkFountainsAttachment.TYPE);
 
             for (DarkFountain fountain : darkFountains) {
                 if (scanResult.roomBlocks.contains(fountain.FOUNTAIN_POS)) {
@@ -23,17 +26,25 @@ public class FountainManager {
             }
 
             darkFountains.add(new DarkFountain(scanResult));
-            level.setData(DarkFountainsAttachment.TYPE, darkFountains);
+            overworldLevel.setData(DarkFountainsAttachment.TYPE, darkFountains);
         } else {
             VladMod.LOGGER.error("Invalid space for a Dark Fountain.");
         }
     }
 
     public static void removeFountain(Level level, DarkFountain fountain) {
-        ArrayList<DarkFountain> darkFountains = level.getData(DarkFountainsAttachment.TYPE);
+        Level overworldLevel = Objects.requireNonNull(level.getServer()).getLevel(Level.OVERWORLD);
+
+        ArrayList<DarkFountain> darkFountains = overworldLevel.getData(DarkFountainsAttachment.TYPE);
         int fountainIndex = darkFountains.indexOf(fountain);
         darkFountains.set(fountainIndex, null);
 
-        level.setData(DarkFountainsAttachment.TYPE, darkFountains);
+        overworldLevel.setData(DarkFountainsAttachment.TYPE, darkFountains);
+    }
+
+    public static List<DarkFountain> getFountains(Level level) {
+        Level overworldLevel = Objects.requireNonNull(level.getServer()).getLevel(Level.OVERWORLD);
+
+        return overworldLevel.getData(DarkFountainsAttachment.TYPE);
     }
 }

@@ -54,14 +54,14 @@ public class DarknessBlock extends Block implements EntityBlock {
         if (!level.isClientSide()) {
             DarknessBlockEntity blockEntity = (DarknessBlockEntity) level.getBlockEntity(pos);
 
-            if (blockEntity.fountain != null && blockEntity.fountain.isFilled) {
+            if (blockEntity.fountain != null && blockEntity.fountain.darkWorld != null) {
                 ServerLevel darkWorldServerLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
                 assert darkWorldServerLevel != null;
 
                 Vec3 fountainPos = blockEntity.fountain.FOUNTAIN_POS.getCenter();
                 Vec3 relativeToFountain = entity.position().subtract(fountainPos);
 
-                Vec3 darkWorldPos = pos.getCenter().multiply(1, 0, 1).add(0, 64, 0);
+                Vec3 darkWorldPos = blockEntity.fountain.darkWorld.boundingBox.getCenter().getCenter();
                 Vec3 largePos = darkWorldPos.add(relativeToFountain.multiply((double) DARK_WORLD_SIZE / 2, 1, (double) DARK_WORLD_SIZE / 2));
 
                 DimensionTransition dimTransition = new DimensionTransition(darkWorldServerLevel,

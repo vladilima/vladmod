@@ -26,7 +26,7 @@ public class DarkFountain {
     public boolean isFilled = false;
     private int ticksAlive = 0;
 
-    private DarkWorld darkWorld;
+    public DarkWorld darkWorld;
 
     DarkFountain (RoomScanner.ScanResult scan) {
         this.roomInfo = scan;
@@ -56,7 +56,7 @@ public class DarkFountain {
                 } else if (!this.isFilled) { // Room filled for the first time
                     System.out.println("Filled Fountain Room");
                     this.isFilled = true;
-                    new DarkWorld().buildDarkWorld(level, roomInfo);
+                    this.darkWorld = DarkWorld.buildDarkWorld(level, roomInfo);
                 }
 
                 List<BlockPos> foundBreaches = getRoomBreaches(level);
