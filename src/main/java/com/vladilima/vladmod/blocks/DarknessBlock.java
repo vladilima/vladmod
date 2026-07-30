@@ -58,7 +58,7 @@ public class DarknessBlock extends Block implements EntityBlock {
                 ServerLevel darkWorldServerLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
                 assert darkWorldServerLevel != null;
 
-                Vec3 fountainPos = blockEntity.fountain.FOUNTAIN_POS.getCenter();
+                Vec3 fountainPos = blockEntity.fountain.fountainPos.getCenter();
                 Vec3 relativeToFountain = entity.position().subtract(fountainPos);
 
                 Vec3 darkWorldPos = blockEntity.fountain.darkWorld.boundingBox.getCenter().getCenter();

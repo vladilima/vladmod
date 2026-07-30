@@ -19,7 +19,7 @@ public class FountainManager {
             ArrayList<DarkFountain> darkFountains = overworldLevel.getData(DarkFountainsAttachment.TYPE);
 
             for (DarkFountain fountain : darkFountains) {
-                if (scanResult.roomBlocks.contains(fountain.FOUNTAIN_POS)) {
+                if (scanResult.roomBlocks.contains(fountain.fountainPos)) {
                     VladMod.LOGGER.error("Attempted to create a Dark Fountain inside a room that already contains a dark fountain.");
                     return;
                 }

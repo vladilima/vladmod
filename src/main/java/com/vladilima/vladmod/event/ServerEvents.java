@@ -22,7 +22,8 @@ public class ServerEvents {
             darkFountains.remove(null);
             for (DarkFountain fountain : darkFountains) {
                 if (fountain != null) {
-                    fountain.tick(level);
+                    Level fountainLevel = level.getServer().getLevel(fountain.fountainDimension);
+                    fountain.tick(fountainLevel);
                 }
             }
         }

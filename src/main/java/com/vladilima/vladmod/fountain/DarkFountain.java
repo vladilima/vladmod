@@ -6,7 +6,7 @@ import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
 import com.vladilima.vladmod.darkworld.DarkWorld;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 
@@ -18,8 +18,9 @@ public class DarkFountain {
     private static final String ROOM_INFO = "room_info";
     private static final String TICKS_ALIVE = "ticks_alive";
 
+    public final ResourceKey<Level> fountainDimension;
+    public final BlockPos fountainPos;
     RoomScanner.ScanResult roomInfo;
-    public final BlockPos FOUNTAIN_POS;
     private BlockPos currentBlock;
     List<BlockPos> roomBreaches = new ArrayList<>();
 
@@ -30,15 +31,18 @@ public class DarkFountain {
 
     DarkFountain (RoomScanner.ScanResult scan) {
         this.roomInfo = scan;
-        this.FOUNTAIN_POS = scan.originPos;
-        this.currentBlock = FOUNTAIN_POS;
+        this.fountainPos = scan.originPos;
+        this.fountainDimension = scan.dimension;
+        
+        this.currentBlock = fountainPos;
     }
 
     DarkFountain (RoomScanner.ScanResult scan, int ticksAlive) {
         this.roomInfo = scan;
-        this.FOUNTAIN_POS = scan.originPos;
-        this.currentBlock = FOUNTAIN_POS;
+        this.fountainPos = scan.originPos;
+        this.fountainDimension = scan.dimension;
 
+        this.currentBlock = fountainPos;
         this.ticksAlive = ticksAlive;
     }
 
@@ -99,7 +103,7 @@ public class DarkFountain {
     }
 
     private void setInitialPosition(Level level) {
-        BlockPos startPos = this.FOUNTAIN_POS;
+        BlockPos startPos = this.fountainPos;
         BlockPos blockAbove = startPos.relative(Direction.UP);
         while (level.isEmptyBlock(blockAbove)) {
             startPos = blockAbove;
@@ -120,7 +124,7 @@ public class DarkFountain {
             if (fillableBlock(level, blockPos)) {
                 allFillable = false;
             } else if (isSolid(level, blockPos)) {
-                RoomScanner.ScanResult roomScan = RoomScanner.scan(level, this.FOUNTAIN_POS, false, roomBreaches);
+                RoomScanner.ScanResult roomScan = RoomScanner.scan(level, this.fountainPos, false, roomBreaches);
                 if (roomScan != null && !roomScan.roomBlocks.isEmpty()) {
                     this.roomInfo = roomScan;
                 } else {
@@ -267,21 +271,21 @@ public class DarkFountain {
         }
     }
 
-    public CompoundTag save() {
-        CompoundTag tag = new CompoundTag();
+//    public CompoundTag save() {
+//        CompoundTag tag = new CompoundTag();
+//
+//        tag.put(ROOM_INFO, roomInfo.save());
+//        tag.putInt(TICKS_ALIVE, ticksAlive);
+//
+//        return tag;
+//    }
 
-        tag.put(ROOM_INFO, roomInfo.save());
-        tag.putInt(TICKS_ALIVE, ticksAlive);
-
-        return tag;
-    }
-
-    public static DarkFountain load(CompoundTag tag) {
-        RoomScanner.ScanResult roomInfo =
-                RoomScanner.ScanResult.load(tag.getCompound(ROOM_INFO));
-
-        return new DarkFountain(roomInfo, tag.getInt(TICKS_ALIVE));
-    }
+//    public static DarkFountain load(CompoundTag tag) {
+//        RoomScanner.ScanResult roomInfo =
+//                RoomScanner.ScanResult.load(tag.getCompound(ROOM_INFO));
+//
+//        return new DarkFountain(roomInfo, tag.getInt(TICKS_ALIVE));
+//    }
 
     static Random rand = new Random();
     public static int randInt(int min, int max) {

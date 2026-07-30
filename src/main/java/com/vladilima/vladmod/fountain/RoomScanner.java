@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 
@@ -60,7 +61,7 @@ public class RoomScanner {
             }
         }
 
-        return new ScanResult(roomBlocks, wallBlocks, doorBlocks, creationPos);
+        return new ScanResult(roomBlocks, wallBlocks, doorBlocks, creationPos, level.dimension());
     }
 
     public static class ScanResult {
@@ -68,6 +69,7 @@ public class RoomScanner {
         private static final String WALL_BLOCKS = "wall_blocks";
         private static final String DOOR_BLOCKS = "door_blocks";
 
+        public ResourceKey<Level> dimension;
         public List<BlockPos> roomBlocks;
         public List<BlockPos> wallBlocks;
         public List<BlockPos> doorBlocks;
@@ -78,7 +80,8 @@ public class RoomScanner {
         public BlockPos lowestYPos;
         public BlockPos highestYPos;
 
-        public ScanResult(List<BlockPos> roomBlocks, List<BlockPos> wallBlocks, List<BlockPos> doorBlocks, BlockPos creationPos) {
+        public ScanResult(List<BlockPos> roomBlocks, List<BlockPos> wallBlocks, List<BlockPos> doorBlocks, BlockPos creationPos, ResourceKey<Level> dimension) {
+            this.dimension = dimension;
             this.roomBlocks = roomBlocks;
             this.wallBlocks = wallBlocks;
             this.doorBlocks = doorBlocks;
@@ -94,51 +97,51 @@ public class RoomScanner {
 
 
 
-        public CompoundTag save() {
-            CompoundTag tag = new CompoundTag();
-
-            ListTag roomBlocks = new ListTag();
-            for (BlockPos pos : this.roomBlocks) {
-                roomBlocks.add(NbtUtils.writeBlockPos(pos));
-            }
-            tag.put(ROOM_BLOCKS, roomBlocks);
-
-            ListTag wallBlocks = new ListTag();
-            for (BlockPos pos : this.wallBlocks) {
-                wallBlocks.add(NbtUtils.writeBlockPos(pos));
-            }
-            tag.put(WALL_BLOCKS, wallBlocks);
-
-            ListTag doorBlocks = new ListTag();
-            for (BlockPos pos : this.doorBlocks) {
-                doorBlocks.add(NbtUtils.writeBlockPos(pos));
-            }
-            tag.put(DOOR_BLOCKS, doorBlocks);
-
-            tag.put(ORIGIN_POS, NbtUtils.writeBlockPos(this.originPos));
-
-            return tag;
-        }
-
-        public static ScanResult load(CompoundTag tag) {
-            List<BlockPos> roomBlocks = new ArrayList<>();
-            for (Tag t : tag.getList(ROOM_BLOCKS, ListTag.TAG_COMPOUND)) {
-                roomBlocks.add(NbtUtils.readBlockPos((CompoundTag) t, ROOM_BLOCKS).get());
-            }
-
-            List<BlockPos> wallBlocks = new ArrayList<>();
-            for (Tag t : tag.getList(WALL_BLOCKS, ListTag.TAG_COMPOUND)) {
-                wallBlocks.add(NbtUtils.readBlockPos((CompoundTag) t, WALL_BLOCKS).get());
-            }
-
-            List<BlockPos> doorBlocks = new ArrayList<>();
-            for (Tag t : tag.getList(DOOR_BLOCKS, ListTag.TAG_COMPOUND)) {
-                doorBlocks.add(NbtUtils.readBlockPos((CompoundTag) t, DOOR_BLOCKS).get());
-            }
-
-            BlockPos originPos = NbtUtils.readBlockPos(tag, ORIGIN_POS).get();
-
-            return new ScanResult(roomBlocks, wallBlocks, doorBlocks, originPos);
-        }
+//        public CompoundTag save() {
+//            CompoundTag tag = new CompoundTag();
+//
+//            ListTag roomBlocks = new ListTag();
+//            for (BlockPos pos : this.roomBlocks) {
+//                roomBlocks.add(NbtUtils.writeBlockPos(pos));
+//            }
+//            tag.put(ROOM_BLOCKS, roomBlocks);
+//
+//            ListTag wallBlocks = new ListTag();
+//            for (BlockPos pos : this.wallBlocks) {
+//                wallBlocks.add(NbtUtils.writeBlockPos(pos));
+//            }
+//            tag.put(WALL_BLOCKS, wallBlocks);
+//
+//            ListTag doorBlocks = new ListTag();
+//            for (BlockPos pos : this.doorBlocks) {
+//                doorBlocks.add(NbtUtils.writeBlockPos(pos));
+//            }
+//            tag.put(DOOR_BLOCKS, doorBlocks);
+//
+//            tag.put(ORIGIN_POS, NbtUtils.writeBlockPos(this.originPos));
+//
+//            return tag;
+//        }
+//
+//        public static ScanResult load(CompoundTag tag) {
+//            List<BlockPos> roomBlocks = new ArrayList<>();
+//            for (Tag t : tag.getList(ROOM_BLOCKS, ListTag.TAG_COMPOUND)) {
+//                roomBlocks.add(NbtUtils.readBlockPos((CompoundTag) t, ROOM_BLOCKS).get());
+//            }
+//
+//            List<BlockPos> wallBlocks = new ArrayList<>();
+//            for (Tag t : tag.getList(WALL_BLOCKS, ListTag.TAG_COMPOUND)) {
+//                wallBlocks.add(NbtUtils.readBlockPos((CompoundTag) t, WALL_BLOCKS).get());
+//            }
+//
+//            List<BlockPos> doorBlocks = new ArrayList<>();
+//            for (Tag t : tag.getList(DOOR_BLOCKS, ListTag.TAG_COMPOUND)) {
+//                doorBlocks.add(NbtUtils.readBlockPos((CompoundTag) t, DOOR_BLOCKS).get());
+//            }
+//
+//            BlockPos originPos = NbtUtils.readBlockPos(tag, ORIGIN_POS).get();
+//
+//            return new ScanResult(roomBlocks, wallBlocks, doorBlocks, originPos);
+//        }
     }
 }
