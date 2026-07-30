@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
@@ -31,9 +30,12 @@ public class DarkWorld {
             BlockPos relativeToFountain = block.subtract(roomInfo.originPos);
             BlockPos largePos = block.offset(relativeToFountain.multiply(DARK_WORLD_SIZE)).atY(1);
 
-            AABB floor = new AABB(largePos).inflate(GenerationUtils.randInt(DARK_WORLD_SIZE, DARK_WORLD_SIZE * 3), 0, GenerationUtils.randInt(DARK_WORLD_SIZE, DARK_WORLD_SIZE * 3));
-            floor = floor.setMaxY(1.5);
-
+            AABB floor = AABB.ofSize(
+                    largePos.getCenter(),
+                    GenerationUtils.randInt(DARK_WORLD_SIZE, (int) (DARK_WORLD_SIZE * 1.5)),
+                    .5,
+                    GenerationUtils.randInt(DARK_WORLD_SIZE, (int) (DARK_WORLD_SIZE * 1.5))
+            );
             BlockPos.betweenClosedStream(floor)
                     .forEach(blockPos -> darkWorldFloorBlocks.add(blockPos.immutable()));
         }
