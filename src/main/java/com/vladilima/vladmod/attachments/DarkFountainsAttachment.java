@@ -17,7 +17,7 @@ public class DarkFountainsAttachment {
             BlockPos.CODEC.fieldOf("currentBlock").forGetter(DarkFountain::currentBlock),
             Codec.INT.fieldOf("ticksAlive").forGetter(DarkFountain::ticksAlive),
             Codec.BOOL.fieldOf("isFilled").forGetter(DarkFountain::isFilled),
-            DarkWorld.CODEC.optionalFieldOf("darkWorld").forGetter((fountain) -> Optional.of(fountain.darkWorld))
+            DarkWorld.CODEC.optionalFieldOf("darkWorld").forGetter((fountain) -> Optional.ofNullable(fountain.darkWorld))
     ).apply(instance, DarkFountain::new));
 
 

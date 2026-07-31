@@ -48,7 +48,7 @@ public class DarkFountain {
         this.darkWorld = darkWorld.orElse(null);
     }
 
-    private static int DARKNESS_SPREAD_DELAY = 5;
+    private static final int DARKNESS_SPREAD_DELAY = 5;
     private int ticksToSpread = 0;
     public void tick(Level level) {
         if (!level.isClientSide()) {
@@ -117,7 +117,7 @@ public class DarkFountain {
             DarknessBlockEntity newDarkness = (DarknessBlockEntity) level.getBlockEntity(startPos);
             assert newDarkness != null;
             newDarkness.fountain = this;
-        };
+        }
     }
 
     private boolean isRoomFilled(Level level) {
@@ -172,10 +172,10 @@ public class DarkFountain {
                 currentBlock = getNextBlock(level);
                 attempts++;
                 if (attempts >= 50) {
-                    FountainManager.nullFountain(level, this);
+                    FountainManager.nullFountain(this);
                     VladMod.LOGGER.error("Exceeded Darkness Spread attempts, deleting Fountain.");
                     return;
-                };
+                }
             }
 
             if (roomInfo.roomBlocks.contains(currentBlock)) {
@@ -184,7 +184,7 @@ public class DarkFountain {
                     if (newDarkness != null) {
                         newDarkness.fountain = this;
                     }
-                };
+                }
 
             } else {
                 currentBlock = getNextBlock(level);

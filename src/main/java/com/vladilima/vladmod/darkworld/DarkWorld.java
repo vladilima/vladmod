@@ -54,7 +54,7 @@ public class DarkWorld {
         List<BlockPos> darkWorldAreaRelative = darkWorldFloorBlocks.stream().distinct().toList();
 
         Optional<BoundingBox> boundingBox = BoundingBox.encapsulatingPositions(darkWorldAreaRelative);
-        BoundingBox finalBoundingBox = getNewDarkWorldLocation(level, boundingBox.orElseThrow());
+        BoundingBox finalBoundingBox = getNewDarkWorldLocation(boundingBox.orElseThrow());
         Registry<DarkWorldTheme> darkWorldThemeRegistry = level.registryAccess().registryOrThrow(DarkWorldTheme.REGISTRY_KEY);
 
         // Placeholder Theme + Generator Get (REPLACE WITH THEME CALCULATION)
@@ -71,21 +71,21 @@ public class DarkWorld {
         return new DarkWorld(finalBoundingBox);
     }
 
-    private static BoundingBox getNewDarkWorldLocation(Level level, BoundingBox newDWBoundingBox) {
-        while (!isLocationValid(level, newDWBoundingBox)) {
+    private static BoundingBox getNewDarkWorldLocation(BoundingBox newDWBoundingBox) {
+        while (!isLocationValid(newDWBoundingBox)) {
             newDWBoundingBox = newDWBoundingBox.moved(64, 0, 64);
         }
         return newDWBoundingBox;
     }
 
-    private static boolean isLocationValid(Level level, BoundingBox newDWBoundingBox) {
-        List<DarkWorld> darkWorlds = FountainManager.getFountains(level).stream()
+    private static boolean isLocationValid(BoundingBox newDWBoundingBox) {
+        List<DarkWorld> darkWorlds = FountainManager.darkFountains.stream()
                 .filter((fountain) -> fountain.darkWorld != null)
                 .map((fountain) -> fountain.darkWorld).toList();
         for (DarkWorld darkWorld : darkWorlds) {
             if (darkWorld.boundingBox.intersects(newDWBoundingBox.inflatedBy(128, 0, 128))) {
                 return false;
-            };
+            }
         }
         return true;
     }
