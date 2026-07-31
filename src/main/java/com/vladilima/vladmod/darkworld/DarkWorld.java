@@ -1,5 +1,7 @@
 package com.vladilima.vladmod.darkworld;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.darkworld.generators.Generator;
 import com.vladilima.vladmod.fountain.FountainManager;
@@ -18,6 +20,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DarkWorld {
     public final BoundingBox boundingBox;
+
+    public static final Codec<DarkWorld> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            BoundingBox.CODEC.fieldOf("boundingBox").forGetter(DarkWorld::boundingBox)
+    ).apply(instance, DarkWorld::new));
 
     public DarkWorld(BoundingBox boundingBox) {
         this.boundingBox = boundingBox;
@@ -116,5 +122,9 @@ public class DarkWorld {
         });
 
         VladMod.LOGGER.debug("Finished Placing Blocks. Placed {} Blocks.", i);
+    }
+
+    public BoundingBox boundingBox() {
+        return boundingBox;
     }
 }

@@ -1,6 +1,7 @@
 package com.vladilima.vladmod.fountain;
 
 import com.vladilima.vladmod.VladMod;
+import com.vladilima.vladmod.darkworld.GenerationUtils;
 import com.vladilima.vladmod.registries.ModBlocks;
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
 import com.vladilima.vladmod.darkworld.DarkWorld;
@@ -12,15 +13,13 @@ import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Optional;
 
 public class DarkFountain {
-    private static final String ROOM_INFO = "room_info";
-    private static final String TICKS_ALIVE = "ticks_alive";
-
+    RoomScanner.ScanResult roomInfo;
     public final ResourceKey<Level> fountainDimension;
     public final BlockPos fountainPos;
-    RoomScanner.ScanResult roomInfo;
+
     private BlockPos currentBlock;
     List<BlockPos> roomBreaches = new ArrayList<>();
 
@@ -33,17 +32,20 @@ public class DarkFountain {
         this.roomInfo = scan;
         this.fountainPos = scan.originPos;
         this.fountainDimension = scan.dimension;
-        
+
         this.currentBlock = fountainPos;
     }
 
-    DarkFountain (RoomScanner.ScanResult scan, int ticksAlive) {
-        this.roomInfo = scan;
-        this.fountainPos = scan.originPos;
-        this.fountainDimension = scan.dimension;
+    // Load Dark Fountain
+    public DarkFountain (RoomScanner.ScanResult roomInfo, BlockPos currentBlock, int ticksAlive, boolean isFilled, Optional<DarkWorld> darkWorld) {
+        this.roomInfo = roomInfo;
+        this.fountainPos = roomInfo.originPos;
+        this.fountainDimension = roomInfo.dimension;
 
-        this.currentBlock = fountainPos;
+        this.currentBlock = currentBlock;
         this.ticksAlive = ticksAlive;
+        this.isFilled = isFilled;
+        this.darkWorld = darkWorld.orElse(null);
     }
 
     private static int DARKNESS_SPREAD_DELAY = 5;
@@ -170,7 +172,7 @@ public class DarkFountain {
                 currentBlock = getNextBlock(level);
                 attempts++;
                 if (attempts >= 50) {
-                    FountainManager.removeFountain(level, this);
+                    FountainManager.nullFountain(level, this);
                     VladMod.LOGGER.error("Exceeded Darkness Spread attempts, deleting Fountain.");
                     return;
                 };
@@ -218,7 +220,7 @@ public class DarkFountain {
 
                 return possibleBlocks.isEmpty() ?
                         currentBlock.relative(Direction.DOWN) :
-                        possibleBlocks.get(randInt(0, possibleBlocks.size() - 1));
+                        possibleBlocks.get(GenerationUtils.randInt(0, possibleBlocks.size() - 1));
             } else if (currentBlock.getY() < roomInfo.lowestYPos.getY() - 1) {
                 return roomInfo.highestYPos; //roomInfo.highestYPos
             } else {
@@ -257,39 +259,20 @@ public class DarkFountain {
         return false;
     }
 
-    private BlockPos getClosestUnfilledInLayer(Level level, List<BlockPos> yLayerBlocks) {
-        List<BlockPos> availableBlockList = yLayerBlocks.stream()
-                .filter((blockPos -> fillableBlock(level, blockPos) && isBlockReachable(level, blockPos)))
-                .sorted((a, b) -> (int) (a.distToCenterSqr(currentBlock.getCenter()) - b.distToCenterSqr(currentBlock.getCenter())))
-                .limit(4)
-                .toList();
-
-        if (availableBlockList.isEmpty()) {
-            return null;
-        } else {
-            return availableBlockList.get(randInt(0, availableBlockList.size() - 1));
-        }
+    public RoomScanner.ScanResult roomInfo() {
+        return roomInfo;
     }
 
-//    public CompoundTag save() {
-//        CompoundTag tag = new CompoundTag();
-//
-//        tag.put(ROOM_INFO, roomInfo.save());
-//        tag.putInt(TICKS_ALIVE, ticksAlive);
-//
-//        return tag;
-//    }
+    public BlockPos currentBlock() {
+        return currentBlock;
+    }
 
-//    public static DarkFountain load(CompoundTag tag) {
-//        RoomScanner.ScanResult roomInfo =
-//                RoomScanner.ScanResult.load(tag.getCompound(ROOM_INFO));
-//
-//        return new DarkFountain(roomInfo, tag.getInt(TICKS_ALIVE));
-//    }
+    public int ticksAlive() {
+        return ticksAlive;
+    }
 
-    static Random rand = new Random();
-    public static int randInt(int min, int max) {
-        return rand.nextInt((max - min) + 1) + min;
+    public boolean isFilled() {
+        return isFilled;
     }
 
     public boolean hasBlock(BlockPos pos) {
