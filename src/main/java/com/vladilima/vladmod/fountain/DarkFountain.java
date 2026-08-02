@@ -52,57 +52,55 @@ public class DarkFountain {
     private static final int DARKNESS_SPREAD_DELAY = 5;
     private int ticksToSpread = 0;
     public void tick(Level level) {
-        if (!level.isClientSide()) {
-            if (this.ticksAlive == 0) {
-                setInitialPosition(level);
+        if (this.ticksAlive == 0) {
+            setInitialPosition(level);
+        }
+
+        if (ticksToSpread <= 0) {
+            if (!isRoomFilled(level)) {
+                darknessSpread(level);
+            } else if (!this.isFilled) { // Room filled for the first time
+                System.out.println("Filled Fountain Room");
+                this.isFilled = true;
+                this.darkWorld = DarkWorld.buildDarkWorld(level, roomInfo);
             }
 
-            if (ticksToSpread <= 0) {
-                if (!isRoomFilled(level)) {
-                    darknessSpread(level);
-                } else if (!this.isFilled) { // Room filled for the first time
-                    System.out.println("Filled Fountain Room");
-                    this.isFilled = true;
-                    this.darkWorld = DarkWorld.buildDarkWorld(level, roomInfo);
-                }
+            List<BlockPos> foundBreaches = getRoomBreaches(level);
+            if (!foundBreaches.isEmpty()) {
+                for (BlockPos breachPos : foundBreaches) {
+                    RoomScanner.ScanResult breachScan = RoomScanner.scan(level, breachPos, true, List.of());
+                    if (breachScan != null && !breachScan.roomBlocks.isEmpty() && !breachScan.wallBlocks.isEmpty()) {
+                        // Remove possible duplicates
+                        breachScan.roomBlocks.removeAll(roomInfo.roomBlocks);
+                        breachScan.wallBlocks.removeAll(roomInfo.wallBlocks);
+                        breachScan.doorBlocks.removeAll(roomInfo.doorBlocks);
 
-                List<BlockPos> foundBreaches = getRoomBreaches(level);
-                if (!foundBreaches.isEmpty()) {
-                    for (BlockPos breachPos : foundBreaches) {
-                        RoomScanner.ScanResult breachScan = RoomScanner.scan(level, breachPos, true, List.of());
-                        if (breachScan != null && !breachScan.roomBlocks.isEmpty() && !breachScan.wallBlocks.isEmpty()) {
-                            // Remove possible duplicates
-                            breachScan.roomBlocks.removeAll(roomInfo.roomBlocks);
-                            breachScan.wallBlocks.removeAll(roomInfo.wallBlocks);
-                            breachScan.doorBlocks.removeAll(roomInfo.doorBlocks);
+                        // Adds new scan
+                        roomInfo.roomBlocks.addAll(breachScan.roomBlocks);
+                        roomInfo.wallBlocks.addAll(breachScan.wallBlocks);
+                        roomInfo.doorBlocks.addAll(breachScan.doorBlocks);
 
-                            // Adds new scan
-                            roomInfo.roomBlocks.addAll(breachScan.roomBlocks);
-                            roomInfo.wallBlocks.addAll(breachScan.wallBlocks);
-                            roomInfo.doorBlocks.addAll(breachScan.doorBlocks);
+                        if (breachScan.highestYPos.getY() > this.roomInfo.highestYPos.getY()) {
+                            this.roomInfo.highestYPos = breachScan.highestYPos;
+                        }
+                        if (breachScan.lowestYPos.getY() < this.roomInfo.lowestYPos.getY()) {
+                            this.roomInfo.lowestYPos = breachScan.lowestYPos;
+                        }
 
-                            if (breachScan.highestYPos.getY() > this.roomInfo.highestYPos.getY()) {
-                                this.roomInfo.highestYPos = breachScan.highestYPos;
-                            }
-                            if (breachScan.lowestYPos.getY() < this.roomInfo.lowestYPos.getY()) {
-                                this.roomInfo.lowestYPos = breachScan.lowestYPos;
-                            }
-
-                            this.roomBreaches.remove(breachPos);
-                        } else {
-                            if (!this.roomBreaches.contains(breachPos)) {
-                                this.roomBreaches.add(breachPos);
-                            }
+                        this.roomBreaches.remove(breachPos);
+                    } else {
+                        if (!this.roomBreaches.contains(breachPos)) {
+                            this.roomBreaches.add(breachPos);
                         }
                     }
                 }
-
-                ticksToSpread = DARKNESS_SPREAD_DELAY;
             }
 
-            ticksToSpread--;
-            ticksAlive++;
+            ticksToSpread = DARKNESS_SPREAD_DELAY;
         }
+
+        ticksToSpread--;
+        ticksAlive++;
     }
 
     private void setInitialPosition(Level level) {

@@ -21,20 +21,24 @@ public class ServerEvents {
     public static void levelTick(LevelTickEvent.Pre event) {
         Level level = event.getLevel();
 
-        if (!loadedFountains) {
-            for (DarkFountain fountain : FountainManager.darkFountains) {
-                if (fountain != null) {
-                    DarkFountain.loadDarkness(level.getServer(), fountain);
+        if (!level.isClientSide()) {
+            if (!loadedFountains) {
+                if (FountainManager.darkFountains != null) {
+                    for (DarkFountain fountain : FountainManager.darkFountains) {
+                        if (fountain != null) {
+                            DarkFountain.loadDarkness(level.getServer(), fountain);
+                        }
+                    }
                 }
+                loadedFountains = true;
             }
-            loadedFountains = true;
-        }
 
-        if (FountainManager.darkFountains != null && !FountainManager.darkFountains.isEmpty()) {
-            FountainManager.darkFountains.remove(null);
-            for (DarkFountain fountain : FountainManager.darkFountains) {
-                if (fountain != null && level.dimension() == fountain.fountainDimension) {
-                    fountain.tick(level);
+            if (FountainManager.darkFountains != null && !FountainManager.darkFountains.isEmpty()) {
+                FountainManager.darkFountains.remove(null);
+                for (DarkFountain fountain : FountainManager.darkFountains) {
+                    if (fountain != null && level.dimension() == fountain.fountainDimension) {
+                        fountain.tick(level);
+                    }
                 }
             }
         }
