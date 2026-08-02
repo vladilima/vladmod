@@ -8,6 +8,7 @@ import com.vladilima.vladmod.darkworld.DarkWorld;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 
@@ -113,11 +114,7 @@ public class DarkFountain {
         }
 
         // Place initial darkness block
-        if (level.setBlockAndUpdate(startPos, ModBlocks.DARKNESS.get().defaultBlockState())) {
-            DarknessBlockEntity newDarkness = (DarknessBlockEntity) level.getBlockEntity(startPos);
-            assert newDarkness != null;
-            newDarkness.fountain = this;
-        }
+        createDarkness(level, startPos);
     }
 
     private boolean isRoomFilled(Level level) {
@@ -179,13 +176,7 @@ public class DarkFountain {
             }
 
             if (roomInfo.roomBlocks.contains(currentBlock)) {
-                if (level.setBlockAndUpdate(currentBlock, ModBlocks.DARKNESS.get().defaultBlockState())) {
-                    DarknessBlockEntity newDarkness = (DarknessBlockEntity) level.getBlockEntity(currentBlock);
-                    if (newDarkness != null) {
-                        newDarkness.fountain = this;
-                    }
-                }
-
+                createDarkness(level, currentBlock);
             } else {
                 currentBlock = getNextBlock(level);
             }
@@ -257,6 +248,29 @@ public class DarkFountain {
             }
         }
         return false;
+    }
+
+    private void createDarkness(Level level, BlockPos targetPos) {
+        if (level.setBlockAndUpdate(targetPos, ModBlocks.DARKNESS.get().defaultBlockState())) {
+            DarknessBlockEntity newDarkness = (DarknessBlockEntity) level.getBlockEntity(targetPos);
+            if (newDarkness != null) {
+                newDarkness.fountain = this;
+            }
+        }
+    }
+
+    // Sets the Fountain parameter for Darkness blocks within room
+    public static void loadDarkness(MinecraftServer server, DarkFountain fountain) {
+        Level level = server.getLevel(fountain.fountainDimension);
+
+        for (BlockPos blockPos : fountain.roomInfo.roomBlocks) {
+            if (level.getBlockState(blockPos) == ModBlocks.DARKNESS.get().defaultBlockState()) {
+                DarknessBlockEntity existingDarkness = (DarknessBlockEntity) level.getBlockEntity(blockPos);
+                if (existingDarkness != null) {
+                    existingDarkness.fountain = fountain;
+                }
+            }
+        }
     }
 
     public RoomScanner.ScanResult roomInfo() {

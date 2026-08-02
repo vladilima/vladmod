@@ -15,9 +15,20 @@ import java.util.Objects;
 @EventBusSubscriber(modid = VladMod.MOD_ID)
 public class ServerEvents {
 
+    public static boolean loadedFountains = false;
+
     @SubscribeEvent
     public static void levelTick(LevelTickEvent.Pre event) {
         Level level = event.getLevel();
+
+        if (!loadedFountains) {
+            for (DarkFountain fountain : FountainManager.darkFountains) {
+                if (fountain != null) {
+                    DarkFountain.loadDarkness(level.getServer(), fountain);
+                }
+            }
+            loadedFountains = true;
+        }
 
         if (FountainManager.darkFountains != null && !FountainManager.darkFountains.isEmpty()) {
             FountainManager.darkFountains.remove(null);
@@ -39,6 +50,7 @@ public class ServerEvents {
 
     @SubscribeEvent
     public static void dataAttachmentLoad(LevelEvent.Load event) {
+        loadedFountains = false;
         LevelAccessor level = event.getLevel();
         if (level.getServer() != null && isLevelCorrect(level)) {
             FountainManager.load(level.getServer());
