@@ -10,6 +10,10 @@ import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import team.lodestar.lodestone.modules.toolkit.item.LodestoneItemProperties;
+
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(VladMod.MOD_ID);
@@ -31,5 +35,12 @@ public class ModItems {
     public static void register(IEventBus eventBus) {
         VladMod.LOGGER.info("Registering Items...");
         ITEMS.register(eventBus);
+    }
+
+    public static <T extends Item> DeferredItem<T> registerModBlock(String name, Supplier<LodestoneItemProperties> propertySupplier, Function<LodestoneItemProperties, T> function) {
+        return ITEMS.register(name, () -> {
+            var properties = propertySupplier.get();
+            return function.apply(properties);
+        });
     }
 }
