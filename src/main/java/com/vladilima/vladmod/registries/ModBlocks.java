@@ -51,7 +51,7 @@ public class ModBlocks {
                     .replaceable()
     );
 
-    public static final BlockBehaviour.Properties GREAT_DOOR_PROPERTIES = BlockBehaviour.Properties.of().strength(-1, 3600000.0F).pushReaction(PushReaction.BLOCK).noTerrainParticles().noLootTable().sound(SoundType.EMPTY);
+    public static final BlockBehaviour.Properties GREAT_DOOR_PROPERTIES = BlockBehaviour.Properties.of().strength(-1, 3600000.0F).pushReaction(PushReaction.BLOCK).noTerrainParticles().noLootTable().sound(SoundType.EMPTY).noOcclusion();
     public static final BlockBlockItemHolder<Block, MultiBlockItem> GREAT_DOOR = registerMultiBlock(
             "great_door",
             () -> new GreatDoorCoreBlock<>(GREAT_DOOR_PROPERTIES),

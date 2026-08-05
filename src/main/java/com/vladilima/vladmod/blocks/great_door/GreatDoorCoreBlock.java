@@ -26,7 +26,7 @@ public class GreatDoorCoreBlock<T extends GreatDoorCoreBlockEntity> extends Lode
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return super.getStateForPlacement(context).setValue(HORIZONTAL_FACING, context.getHorizontalDirection());
+        return super.getStateForPlacement(context).setValue(HORIZONTAL_FACING, context.getHorizontalDirection().getOpposite());
     }
 
     @Override
