@@ -1,0 +1,87 @@
+{
+  "format_version": "1.9.0",
+  "credit": "Made with Blockbench",
+  "texture_size": [144, 144],
+  "textures": {
+    "0": "vladmod:block/great_door"
+  },
+  "elements": [
+    {
+      "name": "right",
+      "from": [-4, -16, 0.05],
+      "to": [6, 20, 0.05],
+      "rotation": {"angle": -22.5, "axis": "y", "origin": [-4, 0, 0.1]},
+      "faces": {
+        "north": {"uv": [8, 0, 12.88889, 16], "texture": "#0"}
+      }
+    },
+    {
+      "name": "left",
+      "from": [6, -16, 0.05],
+      "to": [16, 20, 0.05],
+      "rotation": {"angle": 22.5, "axis": "y", "origin": [16, 0, 0.1]},
+      "faces": {
+        "north": {"uv": [3.11111, 0, 8, 16], "texture": "#0"}
+      }
+    },
+    {
+      "name": "background",
+      "from": [-4, -16, 0],
+      "to": [16, 20, 4.075],
+      "faces": {
+        "east": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"},
+        "south": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"},
+        "west": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"},
+        "up": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"},
+        "down": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"}
+      }
+    },
+    {
+      "name": "background_inside",
+      "from": [16, 19.975, 4],
+      "to": [-4, -15.975, 0.025],
+      "faces": {
+        "east": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"},
+        "west": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"},
+        "up": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"},
+        "down": {"uv": [9.22222, 8.55556, 11.88889, 14.22222], "texture": "#0"}
+      }
+    },
+    {
+      "name": "light",
+      "from": [15.95, 19.95, 3.85],
+      "to": [-3.95, -15.95, 0.1],
+      "shade": false,
+      "light_emission": 15,
+      "rotation": {"angle": 0, "axis": "y", "origin": [20, 36, 15.75]},
+      "faces": {
+        "north": {"uv": [0.11111, 13, 1.22222, 14.33333], "texture": "#0"},
+        "east": {"uv": [0.11111, 13, 1.22222, 14.33333], "texture": "#0"},
+        "west": {"uv": [0.11111, 13, 1.22222, 14.33333], "texture": "#0"},
+        "up": {"uv": [0.11111, 13, 1.22222, 14.33333], "texture": "#0"},
+        "down": {"uv": [0.11111, 13, 1.22222, 14.33333], "texture": "#0"}
+      },
+      "neoforge_data": {
+        "block_light": 15,
+        "sky_light": 15,
+        "ambient_occlusion": false
+      }
+    }
+  ],
+  "groups": [
+    {
+      "name": "door",
+      "origin": [0, 0, 0],
+      "scope": 0,
+      "color": 0,
+      "children": [0, 1]
+    },
+    2,
+    3,
+    4
+  ],
+  "transform": {
+    "translation": [2, 7, 3],
+    "scale": [4, 4, 4]
+  }
+}
