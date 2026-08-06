@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.darkworld.generators.Generator;
+import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.fountain.FountainManager;
 import com.vladilima.vladmod.fountain.RoomScanner;
 import net.minecraft.core.BlockPos;
@@ -20,25 +21,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DarkWorld {
     public final BoundingBox boundingBox;
+    public List<BlockPos> greatDoors;
 
     public static final Codec<DarkWorld> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            BoundingBox.CODEC.fieldOf("boundingBox").forGetter(DarkWorld::boundingBox)
+            BoundingBox.CODEC.fieldOf("boundingBox").forGetter(DarkWorld::boundingBox),
+            BlockPos.CODEC.listOf().fieldOf("greatDoors").forGetter(DarkWorld::greatDoors)
     ).apply(instance, DarkWorld::new));
 
-    public DarkWorld(BoundingBox boundingBox) {
+    public DarkWorld(BoundingBox boundingBox, List<BlockPos> greatDoors) {
         this.boundingBox = boundingBox;
+        this.greatDoors = greatDoors;
     }
 
     public static final int DARK_WORLD_SIZE = 16;
 
-    public static DarkWorld buildDarkWorld(Level level, RoomScanner.ScanResult roomInfo) {
+    public static DarkWorld buildDarkWorld(Level level, DarkFountain darkFountain) {
         Level darkWorldLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
         assert darkWorldLevel != null;
 
         List<BlockPos> darkWorldFloorBlocks = new ArrayList<>(Collections.emptyList());
         // Create Shape of Dark World by expanding floor of LW Room
-        for (BlockPos block : getFloorOfLWRoom(roomInfo)) {
-            BlockPos relativeToFountain = block.subtract(roomInfo.originPos).multiply(DARK_WORLD_SIZE).atY(1);
+        for (BlockPos block : getFloorOfLWRoom(darkFountain.roomInfo())) {
+            BlockPos relativeToFountain = block.subtract(darkFountain.roomInfo().originPos).multiply(DARK_WORLD_SIZE).atY(1);
 
             AABB floor = AABB.ofSize(
                     relativeToFountain.getCenter(),
@@ -67,8 +71,9 @@ public class DarkWorld {
 
         generator.empty(darkWorldLevel, darkWorldArea);
         generator.surface(darkWorldLevel, darkWorldArea);
+        List<BlockPos> greatDoors = generator.features(darkWorldLevel, darkWorldArea, darkFountain);
 
-        return new DarkWorld(finalBoundingBox);
+        return new DarkWorld(finalBoundingBox, greatDoors);
     }
 
     private static BoundingBox getNewDarkWorldLocation(BoundingBox newDWBoundingBox) {
@@ -127,4 +132,7 @@ public class DarkWorld {
     public BoundingBox boundingBox() {
         return boundingBox;
     }
+
+    public List<BlockPos> greatDoors() { return greatDoors; }
+
 }

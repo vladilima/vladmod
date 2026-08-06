@@ -1,16 +1,33 @@
 package com.vladilima.vladmod.blocks.great_door;
 
+import com.vladilima.vladmod.fountain.DarkFountain;
+import com.vladilima.vladmod.fountain.FountainManager;
 import com.vladilima.vladmod.registries.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.AABB;
 import team.lodestar.lodestone.modules.toolkit.blockentity.LodestoneBlockEntityType;
 import team.lodestar.lodestone.modules.toolkit.multiblock.MultiBlockCoreEntity;
 import team.lodestar.lodestone.modules.toolkit.multiblock.MultiBlockStructure;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 public class GreatDoorCoreBlockEntity extends MultiBlockCoreEntity {
     public GreatDoorCoreBlockEntity(LodestoneBlockEntityType<?> type, MultiBlockStructure structure, BlockPos pos, BlockState state) {
@@ -30,6 +47,44 @@ public class GreatDoorCoreBlockEntity extends MultiBlockCoreEntity {
         });
     }
 
+    public static final int DEBOUNCE_DURATION = 5;
+    public HashMap<Entity, Integer> entitiesDebounced = new HashMap<>();
+    @Override
+    public void serverTick(ServerLevel level) {
+        AABB searchArea = AABB.encapsulatingFullBlocks(getComponentPositions().getFirst(), getComponentPositions().getLast());
+        List<Entity> entitiesInside = level.getEntities(null, searchArea);
+        for (Entity entity : entitiesInside) {
+            if ((!entitiesDebounced.containsKey(entity) || entitiesDebounced.get(entity) <= 0) && isOpen(level.getBlockState(getBlockPos()))) {
+                entitiesDebounced.put(entity, DEBOUNCE_DURATION);
+                teleportOutOfDarkWorld(level, entity);
+            }
+        }
+
+        entitiesDebounced.keySet().forEach(entity -> {
+            int ticksLeft = entitiesDebounced.get(entity);
+            if (ticksLeft > 0) {
+                entitiesDebounced.replace(entity, ticksLeft - 1);
+            }
+
+            if (entitiesInside.contains(entity)) {
+                entitiesDebounced.replace(entity, DEBOUNCE_DURATION);
+            }
+        });
+    }
+
+    public BlockPos lightDoorPos;
+    public ResourceKey<Level> lightDoorDim;
+    private void teleportOutOfDarkWorld(ServerLevel level, Entity entity) {
+        ServerLevel fountainLevel = level.getServer().getLevel(lightDoorDim);
+
+        DimensionTransition dimTransition = new DimensionTransition(fountainLevel,
+                lightDoorPos.getBottomCenter(), entity.getDeltaMovement(), entity.getYRot(), entity.getXRot(),
+                DimensionTransition.DO_NOTHING
+        );
+
+        entity.changeDimension(dimTransition);
+    }
+
     @Override
     public InteractionResult onUseWithoutItem(Player pPlayer) {
         toggleOpenProperty(pPlayer, getBlockPos());
@@ -47,5 +102,20 @@ public class GreatDoorCoreBlockEntity extends MultiBlockCoreEntity {
 
     private boolean isOpen(BlockState state) {
         return state.getValue(BlockStateProperties.OPEN);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("lightDoorPos", NbtUtils.writeBlockPos(lightDoorPos));
+        tag.put("lightDoorDim", Level.RESOURCE_KEY_CODEC.encodeStart(NbtOps.INSTANCE, lightDoorDim).getOrThrow());
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+
+        lightDoorPos = NbtUtils.readBlockPos(tag, "lightDoorPos").orElseThrow();
+        lightDoorDim = Level.RESOURCE_KEY_CODEC.parse(NbtOps.INSTANCE, tag.get("lightDoorDim")).getOrThrow();
     }
 }

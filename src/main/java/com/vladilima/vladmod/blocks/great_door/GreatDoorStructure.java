@@ -69,14 +69,24 @@ public class GreatDoorStructure extends HorizontalDirectionStructure {
 
     @Override
     public void place(BlockPlaceContext context) {
-        rotatedPieces(context.getHorizontalDirection().getAxis())
-                .forEach(s -> s.place(context.getClickedPos(), context.getLevel(), s.state.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection())));
+        if (context.getPlayer() != null) {
+            rotatedPieces(context.getHorizontalDirection().getAxis())
+                    .forEach(s -> s.place(context.getClickedPos(), context.getLevel(), s.state.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getHorizontalDirection())));
+        } else {
+            rotatedPieces(context.getClickedFace().getAxis())
+                    .forEach(s -> s.place(context.getClickedPos(), context.getLevel(), s.state.setValue(BlockStateProperties.HORIZONTAL_FACING, context.getClickedFace())));
+        }
     }
 
     @Override
     public boolean canPlace(BlockPlaceContext context) {
-        return rotatedPieces(context.getHorizontalDirection().getAxis())
-                .stream().allMatch(p -> p.canPlace(context));
+        if (context.getPlayer() != null) {
+            return rotatedPieces(context.getHorizontalDirection().getAxis())
+                    .stream().allMatch(p -> p.canPlace(context));
+        } else {
+            return rotatedPieces(context.getClickedFace().getAxis())
+                    .stream().allMatch(p -> p.canPlace(context));
+        }
     }
 
     public ArrayList<StructurePiece> rotatedPieces(Direction.Axis axis) {

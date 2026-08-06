@@ -1,19 +1,38 @@
 package com.vladilima.vladmod.darkworld.generators;
 
 import com.vladilima.vladmod.VladMod;
+import com.vladilima.vladmod.blocks.great_door.GreatDoorCoreBlockEntity;
 import com.vladilima.vladmod.darkworld.GenerationUtils;
+import com.vladilima.vladmod.fountain.DarkFountain;
+import com.vladilima.vladmod.registries.ModBlocks;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.vladilima.vladmod.darkworld.DarkWorld.DARK_WORLD_SIZE;
+
 public class CliffsGenerator extends Generator {
+    private final static BlockState SURFACE_BLOCK = Blocks.LIGHT_BLUE_TERRACOTTA.defaultBlockState();
+    private final static BlockState CLIFF_BLOCK = Blocks.BLUE_TERRACOTTA.defaultBlockState();
+
     private final int SURFACE_LEVEL = 8;
     private final int CLIFF_MIN_Y = SURFACE_LEVEL + 5;
     private final int CLIFF_MAX_Y = 63;
@@ -68,7 +87,7 @@ public class CliffsGenerator extends Generator {
                 GenerationUtils.setBlockAtChunkSection(
                         levelChunk,
                         blockPos,
-                        Blocks.BLUE_TERRACOTTA.defaultBlockState()
+                        CLIFF_BLOCK
                 );
             });
         }
@@ -78,13 +97,13 @@ public class CliffsGenerator extends Generator {
             for (int y = CLIFF_MIN_Y; y <= CLIFF_MAX_Y + 1; y++) {
                 if (level.isEmptyBlock(pos.atY(y))) {
                     break;
-                } else if (level.getBlockState(pos.atY(y)) == Blocks.BLUE_TERRACOTTA.defaultBlockState()) {
+                } else if (level.getBlockState(pos.atY(y)) == CLIFF_BLOCK) {
                     if (level.getBlockState(pos.atY(y + 1)) == Blocks.AIR.defaultBlockState()) {
                         LevelChunk levelChunk = level.getChunkAt(pos);
                         GenerationUtils.setBlockAtChunkSection(
                                 levelChunk,
                                 pos.atY(y),
-                                Blocks.LIGHT_BLUE_TERRACOTTA.defaultBlockState()
+                                SURFACE_BLOCK
                         );
                         break;
                     }
@@ -176,8 +195,88 @@ public class CliffsGenerator extends Generator {
     }
 
     @Override
-    public void features(Level level, List<BlockPos> generationArea) {
-        VladMod.LOGGER.debug("Began populating Dark World with Features.");
+    public List<BlockPos> features(Level level, List<BlockPos> generationArea, DarkFountain fountainInfo) {
+        ServerLevel fountainLevel = level.getServer().getLevel(fountainInfo.fountainDimension);
+
+        // Gets unique door positions from LW room.
+        List<BlockPos> lightDoors = new ArrayList<>();
+        for (BlockPos doorPos : fountainInfo.roomInfo().doorBlocks) {
+            if (fountainLevel.getBlockState(doorPos).getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER) {
+                boolean isDoubleDoor = false;
+                for (Direction dir : Direction.Plane.HORIZONTAL) {
+                    if (lightDoors.contains(doorPos.relative(dir))) {
+                        isDoubleDoor = true;
+                    }
+                }
+
+                if (!isDoubleDoor) {
+                    lightDoors.add(doorPos);
+                };
+            }
+        }
+
+        List<BlockPos> greatDoors = new ArrayList<>();
+
+        for (BlockPos door : lightDoors) {
+            BlockPos relativeToFountain = door.subtract(fountainInfo.fountainPos);
+
+            BlockPos darkWorldPos = BoundingBox.encapsulatingPositions(generationArea).get().getCenter();
+            BlockPos largePos = darkWorldPos.offset(relativeToFountain.multiply(DARK_WORLD_SIZE / 2));
+
+            AABB doorArea = AABB.of(new BoundingBox(largePos.atY(1))).inflate(DARK_WORLD_SIZE * 2, 1, DARK_WORLD_SIZE * 2);
+            for (BlockPos pos : generationArea) {
+                if (doorArea.contains(pos.getCenter())) {
+                    if (isValidForDoor(level, pos, fountainLevel.getBlockState(door).getValue(HorizontalDirectionalBlock.FACING))) {
+                        VladMod.LOGGER.info("Placed a door");
+                        BlockPos validPos = pos;
+                        while (!level.isEmptyBlock(validPos.above())) {
+                            validPos = validPos.above();
+                        }
+                        validPos = validPos.above();
+                        BlockPlaceContext context = new BlockPlaceContext(
+                                level,
+                                null,
+                                InteractionHand.MAIN_HAND,
+                                ItemStack.EMPTY,
+                                new BlockHitResult(
+                                        validPos.getCenter(),
+                                        fountainLevel.getBlockState(door).getValue(HorizontalDirectionalBlock.FACING),
+                                        validPos,
+                                        false
+                                )
+                        );
+                        level.setBlockAndUpdate(validPos, ModBlocks.GREAT_DOOR.getDefaultState().setValue(BlockStateProperties.HORIZONTAL_FACING, fountainLevel.getBlockState(door).getValue(HorizontalDirectionalBlock.FACING)));
+                        GreatDoorCoreBlockEntity greatDoor = (GreatDoorCoreBlockEntity) level.getBlockEntity(validPos);
+                        greatDoor.lightDoorPos = door;
+                        greatDoor.lightDoorDim = fountainInfo.fountainDimension;
+                        greatDoor.structure.place(context);
+
+                        greatDoors.add(validPos);
+                        break;
+                    }
+                }
+            }
+        }
+
+        VladMod.LOGGER.debug("Finished populating DW with Features.");
+        return greatDoors;
+    }
+
+    private boolean isValidForDoor(Level level, BlockPos doorCandidatePos, Direction doorDirection) {
+        BlockPos currentPos = doorCandidatePos;
+        while (!level.isEmptyBlock(currentPos.above())) {
+            currentPos = currentPos.above();
+        }
+        if (level.getBlockState(currentPos) == SURFACE_BLOCK) {
+//            if (GreatDoorStructure.STRUCTURE.get().canPlace(new BlockPlaceContext(level, null, null, null, new BlockHitResult(currentPos.getCenter(), doorDirection, currentPos, false)))) {
+//                return true;
+//            }
+//            VladMod.LOGGER.error("Can't place Great Door here");
+            return true;
+        }
+
+        VladMod.LOGGER.error("Not a surface block");
+        return false;
     }
 
     @Override
