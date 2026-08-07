@@ -1,8 +1,10 @@
 package com.vladilima.vladmod.blocks.great_door;
 
 import com.vladilima.vladmod.registries.ModBlocks;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import team.lodestar.lodestone.modules.toolkit.multiblock.HorizontalDirectionStructure;
 import team.lodestar.lodestone.modules.toolkit.multiblock.MultiBlockStructure;
@@ -10,6 +12,8 @@ import team.lodestar.lodestone.modules.toolkit.multiblock.MultiBlockStructure;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN;
 
 public class GreatDoorStructure extends HorizontalDirectionStructure {
     public static final Supplier<GreatDoorStructure> STRUCTURE = () -> (GreatDoorStructure.of(
@@ -87,6 +91,11 @@ public class GreatDoorStructure extends HorizontalDirectionStructure {
             return rotatedPieces(context.getClickedFace().getAxis())
                     .stream().allMatch(p -> p.canPlace(context));
         }
+    }
+
+    public void placeGenerated(Level level, BlockPos pos, Direction direction, boolean open) {
+        rotatedPieces(direction.getAxis())
+                .forEach(s -> s.place(pos, level, s.state.setValue(BlockStateProperties.HORIZONTAL_FACING, direction).setValue(OPEN, open)));
     }
 
     public ArrayList<StructurePiece> rotatedPieces(Direction.Axis axis) {

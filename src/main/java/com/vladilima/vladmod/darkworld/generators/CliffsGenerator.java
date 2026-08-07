@@ -2,6 +2,7 @@ package com.vladilima.vladmod.darkworld.generators;
 
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorCoreBlockEntity;
+import com.vladilima.vladmod.blocks.great_door.GreatDoorStructure;
 import com.vladilima.vladmod.darkworld.GenerationUtils;
 import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.registries.ModBlocks;
@@ -223,33 +224,29 @@ public class CliffsGenerator extends Generator {
             BlockPos darkWorldPos = BoundingBox.encapsulatingPositions(generationArea).get().getCenter();
             BlockPos largePos = darkWorldPos.offset(relativeToFountain.multiply(DARK_WORLD_SIZE / 2));
 
-            AABB doorArea = AABB.of(new BoundingBox(largePos.atY(1))).inflate(DARK_WORLD_SIZE * 2, 1, DARK_WORLD_SIZE * 2);
+            AABB doorArea = AABB.of(new BoundingBox(largePos.atY(1))).inflate(DARK_WORLD_SIZE, 1, DARK_WORLD_SIZE);
             for (BlockPos pos : generationArea) {
                 if (doorArea.contains(pos.getCenter())) {
-                    if (isValidForDoor(level, pos, fountainLevel.getBlockState(door).getValue(HorizontalDirectionalBlock.FACING))) {
+                    BlockState lightDoorBS = fountainLevel.getBlockState(door);
+                    if (isValidForDoor(level, pos, lightDoorBS.getValue(HorizontalDirectionalBlock.FACING))) {
                         VladMod.LOGGER.info("Placed a door");
                         BlockPos validPos = pos;
                         while (!level.isEmptyBlock(validPos.above())) {
                             validPos = validPos.above();
                         }
                         validPos = validPos.above();
-                        BlockPlaceContext context = new BlockPlaceContext(
-                                level,
-                                null,
-                                InteractionHand.MAIN_HAND,
-                                ItemStack.EMPTY,
-                                new BlockHitResult(
-                                        validPos.getCenter(),
-                                        fountainLevel.getBlockState(door).getValue(HorizontalDirectionalBlock.FACING),
-                                        validPos,
-                                        false
-                                )
-                        );
-                        level.setBlockAndUpdate(validPos, ModBlocks.GREAT_DOOR.getDefaultState().setValue(BlockStateProperties.HORIZONTAL_FACING, fountainLevel.getBlockState(door).getValue(HorizontalDirectionalBlock.FACING)));
+
+                        BlockState greatDoorBlockState = ModBlocks.GREAT_DOOR.getDefaultState()
+                                .setValue(BlockStateProperties.HORIZONTAL_FACING, lightDoorBS.getValue(HorizontalDirectionalBlock.FACING))
+                                .setValue(BlockStateProperties.OPEN, lightDoorBS.getValue(BlockStateProperties.OPEN));
+                        level.setBlockAndUpdate(validPos, greatDoorBlockState);
+
                         GreatDoorCoreBlockEntity greatDoor = (GreatDoorCoreBlockEntity) level.getBlockEntity(validPos);
                         greatDoor.lightDoorPos = door;
                         greatDoor.lightDoorDim = fountainInfo.fountainDimension;
-                        greatDoor.structure.place(context);
+
+                        GreatDoorStructure structure = (GreatDoorStructure) greatDoor.structure;
+                        structure.placeGenerated(level, validPos, fountainLevel.getBlockState(door).getValue(HorizontalDirectionalBlock.FACING), lightDoorBS.getValue(BlockStateProperties.OPEN));
 
                         greatDoors.add(validPos);
                         break;

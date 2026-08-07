@@ -1,7 +1,5 @@
 package com.vladilima.vladmod.blocks.great_door;
 
-import com.vladilima.vladmod.fountain.DarkFountain;
-import com.vladilima.vladmod.fountain.FountainManager;
 import com.vladilima.vladmod.registries.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -10,12 +8,13 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -25,9 +24,11 @@ import team.lodestar.lodestone.modules.toolkit.blockentity.LodestoneBlockEntityT
 import team.lodestar.lodestone.modules.toolkit.multiblock.MultiBlockCoreEntity;
 import team.lodestar.lodestone.modules.toolkit.multiblock.MultiBlockStructure;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN;
 
 public class GreatDoorCoreBlockEntity extends MultiBlockCoreEntity {
     public GreatDoorCoreBlockEntity(LodestoneBlockEntityType<?> type, MultiBlockStructure structure, BlockPos pos, BlockState state) {
@@ -47,10 +48,11 @@ public class GreatDoorCoreBlockEntity extends MultiBlockCoreEntity {
         });
     }
 
-    public static final int DEBOUNCE_DURATION = 5;
+    public static final int DEBOUNCE_DURATION = 10;
     public HashMap<Entity, Integer> entitiesDebounced = new HashMap<>();
     @Override
     public void serverTick(ServerLevel level) {
+        // Transports entities to Dark World
         AABB searchArea = AABB.encapsulatingFullBlocks(getComponentPositions().getFirst(), getComponentPositions().getLast());
         List<Entity> entitiesInside = level.getEntities(null, searchArea);
         for (Entity entity : entitiesInside) {
@@ -70,6 +72,17 @@ public class GreatDoorCoreBlockEntity extends MultiBlockCoreEntity {
                 entitiesDebounced.replace(entity, DEBOUNCE_DURATION);
             }
         });
+
+        // Sync to LW Door
+        ServerLevel fountainLevel = level.getServer().getLevel(lightDoorDim);
+        BlockState doorBlockState = fountainLevel.getBlockState(lightDoorPos);
+        if (doorBlockState.is(BlockTags.DOORS)) {
+            if (isOpen(getBlockState()) != doorBlockState.getValue(OPEN)) {
+                useDoor(null);
+            }
+        } else if (isOpen(getBlockState())) {
+            useDoor(null);
+        }
     }
 
     public BlockPos lightDoorPos;
@@ -87,14 +100,36 @@ public class GreatDoorCoreBlockEntity extends MultiBlockCoreEntity {
 
     @Override
     public InteractionResult onUseWithoutItem(Player pPlayer) {
-        toggleOpenProperty(pPlayer, getBlockPos());
-        for (BlockPos component : getComponentPositions()) {
-            toggleOpenProperty(pPlayer, component);
+        if (!level.isClientSide()) {
+
+            ServerLevel fountainLevel = level.getServer().getLevel(lightDoorDim);
+            BlockState doorBlockState = fountainLevel.getBlockState(lightDoorPos);
+            if (doorBlockState.is(BlockTags.DOORS)) {
+                DoorBlock doorBlock = (DoorBlock) doorBlockState.getBlock();
+                if (doorBlock.type().canOpenByHand()) {
+                    useDoor(pPlayer);
+                    doorBlock.setOpen(
+                            pPlayer,
+                            fountainLevel,
+                            doorBlockState,
+                            lightDoorPos,
+                            isOpen(level.getBlockState(getBlockPos()))
+                    );
+                }
+            }
         }
+
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
-    private void toggleOpenProperty(Player pPlayer, BlockPos pos) {
+    public void useDoor(@Nullable Player player) {
+        toggleOpenProperty(player, getBlockPos());
+        for (BlockPos component : getComponentPositions()) {
+            toggleOpenProperty(player, component);
+        }
+    }
+
+    private void toggleOpenProperty(@Nullable Player pPlayer, BlockPos pos) {
         BlockState state = level.getBlockState(pos).cycle(BlockStateProperties.OPEN);
         level.setBlock(pos, state, 10);
         level.gameEvent(pPlayer, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
