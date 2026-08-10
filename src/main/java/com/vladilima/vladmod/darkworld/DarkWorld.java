@@ -69,11 +69,11 @@ public class DarkWorld {
         List<BlockPos> darkWorldArea = darkWorldAreaRelative.stream()
                 .map((blockPos -> blockPos.offset(finalBoundingBox.getCenter()).atY(1))).toList();
 
-        generator.empty(darkWorldLevel, darkWorldArea);
-        generator.surface(darkWorldLevel, darkWorldArea);
-        List<BlockPos> greatDoors = generator.features(darkWorldLevel, darkWorldArea, darkFountain);
+        Generator.GenerationInfo genInfo = generator.empty(darkWorldLevel, darkWorldArea, darkFountain);
+        genInfo = generator.surface(darkWorldLevel, genInfo);
+        genInfo = generator.features(darkWorldLevel, genInfo);
 
-        return new DarkWorld(finalBoundingBox, greatDoors);
+        return new DarkWorld(finalBoundingBox, genInfo.greatDoors);
     }
 
     private static BoundingBox getNewDarkWorldLocation(BoundingBox newDWBoundingBox) {
@@ -134,5 +134,4 @@ public class DarkWorld {
     }
 
     public List<BlockPos> greatDoors() { return greatDoors; }
-
 }

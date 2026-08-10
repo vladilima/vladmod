@@ -26,6 +26,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.vladilima.vladmod.darkworld.DarkWorld.DARK_WORLD_SIZE;
@@ -39,7 +40,7 @@ public class CliffsGenerator extends Generator {
     private final int CLIFF_MAX_Y = 63;
 
     @Override
-    public void empty(Level level, List<BlockPos> generationArea) {
+    public GenerationInfo empty(Level level, List<BlockPos> generationArea, DarkFountain darkFountain) {
         VladMod.LOGGER.debug("Began generation of empty DW Location.");
 
         generationArea.forEach(blockPos -> {
@@ -54,21 +55,22 @@ public class CliffsGenerator extends Generator {
         });
 
         VladMod.LOGGER.debug("Finished DW hollowing-out.");
+        return new GenerationInfo(generationArea, darkFountain);
     }
 
     @Override
-    public void surface(Level level, List<BlockPos> generationArea) {
+    public GenerationInfo surface(Level level, GenerationInfo generationInfo) {
         VladMod.LOGGER.debug("Began generation of surface of Dark World.");
 
         List<PathSegment> paths = new ArrayList<>();
 
         // Create Path Segments
-        int pathAmount = getPathAmount(generationArea);
+        int pathAmount = getPathAmount(generationInfo.generationArea);
         for (int i = 0; i < pathAmount; i++) {
             int pathSegmentAmount = GenerationUtils.randInt(7, 15);
             List<PathSegment> currentPath = new ArrayList<>();
             for (int j = 0; j < pathSegmentAmount; j++) {
-                PathSegment newSegment = getNewSegment(level, generationArea, paths, currentPath);
+                PathSegment newSegment = getNewSegment(level, generationInfo.generationArea, paths, currentPath);
                 if (newSegment == null) {
                     currentPath.clear();
                     i -= 1;
@@ -93,19 +95,21 @@ public class CliffsGenerator extends Generator {
             });
         }
 
+        List<BlockPos> surfaceBlocks = new ArrayList<>();
         // Place "surface" blocks
-        for (BlockPos pos : generationArea) {
+        for (BlockPos pos : generationInfo.generationArea) {
             for (int y = CLIFF_MIN_Y; y <= CLIFF_MAX_Y + 1; y++) {
                 if (level.isEmptyBlock(pos.atY(y))) {
                     break;
                 } else if (level.getBlockState(pos.atY(y)) == CLIFF_BLOCK) {
-                    if (level.getBlockState(pos.atY(y + 1)) == Blocks.AIR.defaultBlockState()) {
+                    if (level.isEmptyBlock(pos.atY(y + 1))) {
                         LevelChunk levelChunk = level.getChunkAt(pos);
                         GenerationUtils.setBlockAtChunkSection(
                                 levelChunk,
                                 pos.atY(y),
                                 SURFACE_BLOCK
                         );
+                        surfaceBlocks.add(pos.atY(y));
                         break;
                     }
                 }
@@ -113,6 +117,8 @@ public class CliffsGenerator extends Generator {
         }
 
         VladMod.LOGGER.debug("Finished DW surface Generation.");
+        generationInfo.surfaceBlocks = surfaceBlocks;
+        return generationInfo;
     }
 
     // Decides amount of path structures the dark world will have based on size
@@ -196,12 +202,12 @@ public class CliffsGenerator extends Generator {
     }
 
     @Override
-    public List<BlockPos> features(Level level, List<BlockPos> generationArea, DarkFountain fountainInfo) {
-        ServerLevel fountainLevel = level.getServer().getLevel(fountainInfo.fountainDimension);
+    public GenerationInfo features(Level level, GenerationInfo generationInfo) {
+        ServerLevel fountainLevel = level.getServer().getLevel(generationInfo.fountain.fountainDimension);
 
         // Gets unique door positions from LW room.
         List<BlockPos> lightDoors = new ArrayList<>();
-        for (BlockPos doorPos : fountainInfo.roomInfo().doorBlocks) {
+        for (BlockPos doorPos : generationInfo.fountain.roomInfo().doorBlocks) {
             if (fountainLevel.getBlockState(doorPos).getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER) {
                 boolean isDoubleDoor = false;
                 for (Direction dir : Direction.Plane.HORIZONTAL) {
@@ -217,67 +223,68 @@ public class CliffsGenerator extends Generator {
         }
 
         List<BlockPos> greatDoors = new ArrayList<>();
-
         for (BlockPos door : lightDoors) {
-            BlockPos relativeToFountain = door.subtract(fountainInfo.fountainPos);
+            BlockPos relativeToFountain = door.subtract(generationInfo.fountain.fountainPos);
+            BlockPos darkWorldPos = BoundingBox.encapsulatingPositions(generationInfo.generationArea).get().getCenter();
+            BlockPos largePos = darkWorldPos.offset(relativeToFountain.multiply(DARK_WORLD_SIZE)).atY((CLIFF_MAX_Y + CLIFF_MIN_Y) / 2);
 
-            BlockPos darkWorldPos = BoundingBox.encapsulatingPositions(generationArea).get().getCenter();
-            BlockPos largePos = darkWorldPos.offset(relativeToFountain.multiply(DARK_WORLD_SIZE / 2));
+            for (BlockPos pos : generationInfo.surfaceBlocks.stream()
+                    .sorted(Comparator.comparingInt(b -> b.distManhattan(largePos))).toList()) {
+                BlockState lightDoorBS = fountainLevel.getBlockState(door);
+                if (isValidForDoor(level, pos, lightDoorBS.getValue(HorizontalDirectionalBlock.FACING))) {
+                    VladMod.LOGGER.info("Placed a door");
+                    BlockPos placePos = pos.above();
 
-            AABB doorArea = AABB.of(new BoundingBox(largePos.atY(1))).inflate(DARK_WORLD_SIZE, 1, DARK_WORLD_SIZE);
-            for (BlockPos pos : generationArea) {
-                if (doorArea.contains(pos.getCenter())) {
-                    BlockState lightDoorBS = fountainLevel.getBlockState(door);
-                    if (isValidForDoor(level, pos, lightDoorBS.getValue(HorizontalDirectionalBlock.FACING))) {
-                        VladMod.LOGGER.info("Placed a door");
-                        BlockPos validPos = pos;
-                        while (!level.isEmptyBlock(validPos.above())) {
-                            validPos = validPos.above();
-                        }
-                        validPos = validPos.above();
+                    BlockState greatDoorBlockState = ModBlocks.GREAT_DOOR.getDefaultState()
+                            .setValue(BlockStateProperties.HORIZONTAL_FACING, lightDoorBS.getValue(HorizontalDirectionalBlock.FACING))
+                            .setValue(BlockStateProperties.OPEN, lightDoorBS.getValue(BlockStateProperties.OPEN));
+                    level.setBlockAndUpdate(placePos, greatDoorBlockState);
 
-                        BlockState greatDoorBlockState = ModBlocks.GREAT_DOOR.getDefaultState()
-                                .setValue(BlockStateProperties.HORIZONTAL_FACING, lightDoorBS.getValue(HorizontalDirectionalBlock.FACING))
-                                .setValue(BlockStateProperties.OPEN, lightDoorBS.getValue(BlockStateProperties.OPEN));
-                        level.setBlockAndUpdate(validPos, greatDoorBlockState);
+                    GreatDoorCoreBlockEntity greatDoor = (GreatDoorCoreBlockEntity) level.getBlockEntity(placePos);
+                    greatDoor.lightDoorPos = door;
+                    greatDoor.lightDoorDim = generationInfo.fountain.fountainDimension;
 
-                        GreatDoorCoreBlockEntity greatDoor = (GreatDoorCoreBlockEntity) level.getBlockEntity(validPos);
-                        greatDoor.lightDoorPos = door;
-                        greatDoor.lightDoorDim = fountainInfo.fountainDimension;
+                    GreatDoorStructure structure = (GreatDoorStructure) greatDoor.structure;
+                    structure.placeGenerated(level, placePos, lightDoorBS.getValue(HorizontalDirectionalBlock.FACING), lightDoorBS.getValue(BlockStateProperties.OPEN));
 
-                        GreatDoorStructure structure = (GreatDoorStructure) greatDoor.structure;
-                        structure.placeGenerated(level, validPos, fountainLevel.getBlockState(door).getValue(HorizontalDirectionalBlock.FACING), lightDoorBS.getValue(BlockStateProperties.OPEN));
-
-                        greatDoors.add(validPos);
-                        break;
-                    }
+                    greatDoors.add(placePos);
+                    break;
                 }
             }
         }
 
         VladMod.LOGGER.debug("Finished populating DW with Features.");
-        return greatDoors;
+        generationInfo.greatDoors = greatDoors;
+        return generationInfo;
     }
 
     private boolean isValidForDoor(Level level, BlockPos doorCandidatePos, Direction doorDirection) {
-        BlockPos currentPos = doorCandidatePos;
-        while (!level.isEmptyBlock(currentPos.above())) {
-            currentPos = currentPos.above();
+        boolean hasSurface = // Check if Door has surface beneath its blocks & in front of it
+                BlockPos.betweenClosedStream(
+                        doorCandidatePos.relative(doorDirection.getCounterClockWise(), 2),
+                        doorCandidatePos.relative(doorDirection.getClockWise(), 2).relative(doorDirection, 4)
+                ).noneMatch(level::isEmptyBlock);
+
+        if (!hasSurface) {
+            VladMod.LOGGER.error("Great Door Position Has No Full Surface");
+            return false;
         }
-        if (level.getBlockState(currentPos) == SURFACE_BLOCK) {
-//            if (GreatDoorStructure.STRUCTURE.get().canPlace(new BlockPlaceContext(level, null, null, null, new BlockHitResult(currentPos.getCenter(), doorDirection, currentPos, false)))) {
-//                return true;
-//            }
-//            VladMod.LOGGER.error("Can't place Great Door here");
+
+        // Check if Door isn't colliding with any blocks
+        BlockPos placePos = doorCandidatePos.above();
+        BlockPlaceContext context =
+                new BlockPlaceContext(level, null, InteractionHand.MAIN_HAND, ItemStack.EMPTY,
+                        new BlockHitResult(placePos.getCenter(), doorDirection, placePos, false));
+        if (GreatDoorStructure.STRUCTURE.get().canPlace(context)) {
             return true;
         }
 
-        VladMod.LOGGER.error("Not a surface block");
+        VladMod.LOGGER.error("Great Door Position Occupied");
         return false;
     }
 
     @Override
-    public void entities(Level level, List<BlockPos> generationArea) {
+    public void entities(Level level, GenerationInfo generationInfo) {
         VladMod.LOGGER.debug("Began populating Dark World with Entities.");
     }
 }

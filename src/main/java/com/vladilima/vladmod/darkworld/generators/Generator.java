@@ -7,11 +7,24 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public abstract class Generator {
-    public abstract void empty(Level level, List<BlockPos> generationArea);
+    public abstract GenerationInfo empty(Level level, List<BlockPos> generationArea, DarkFountain darkFountain);
 
-    public abstract void surface(Level level, List<BlockPos> generationArea);
+    public abstract GenerationInfo surface(Level level, GenerationInfo generationInfo);
 
-    public abstract List<BlockPos> features(Level level, List<BlockPos> generationArea, DarkFountain fountainInfo);
+    public abstract GenerationInfo features(Level level, GenerationInfo generationInfo);
 
-    public abstract void entities(Level level, List<BlockPos> generationArea);
+    public abstract void entities(Level level, GenerationInfo generationInfo);
+
+
+    public class GenerationInfo {
+        List<BlockPos> generationArea;
+        List<BlockPos> surfaceBlocks;
+        public List<BlockPos> greatDoors;
+        DarkFountain fountain;
+
+        public GenerationInfo(List<BlockPos> generationArea, DarkFountain fountain) {
+            this.generationArea = generationArea;
+            this.fountain = fountain;
+        }
+    }
 }
