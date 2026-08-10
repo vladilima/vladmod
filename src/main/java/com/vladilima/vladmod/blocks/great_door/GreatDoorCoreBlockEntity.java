@@ -25,7 +25,6 @@ import team.lodestar.lodestone.modules.toolkit.multiblock.MultiBlockCoreEntity;
 import team.lodestar.lodestone.modules.toolkit.multiblock.MultiBlockStructure;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.List;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.OPEN;
@@ -48,30 +47,16 @@ public class GreatDoorCoreBlockEntity extends MultiBlockCoreEntity {
         });
     }
 
-    public static final int DEBOUNCE_DURATION = 10;
-    public HashMap<Entity, Integer> entitiesDebounced = new HashMap<>();
     @Override
     public void serverTick(ServerLevel level) {
         // Transports entities to Dark World
         AABB searchArea = AABB.encapsulatingFullBlocks(getComponentPositions().getFirst(), getComponentPositions().getLast());
         List<Entity> entitiesInside = level.getEntities(null, searchArea);
         for (Entity entity : entitiesInside) {
-            if ((!entitiesDebounced.containsKey(entity) || entitiesDebounced.get(entity) <= 0) && isOpen(level.getBlockState(getBlockPos()))) {
-                entitiesDebounced.put(entity, DEBOUNCE_DURATION);
+            if (isOpen(level.getBlockState(getBlockPos()))) {
                 teleportOutOfDarkWorld(level, entity);
             }
         }
-
-        entitiesDebounced.keySet().forEach(entity -> {
-            int ticksLeft = entitiesDebounced.get(entity);
-            if (ticksLeft > 0) {
-                entitiesDebounced.replace(entity, ticksLeft - 1);
-            }
-
-            if (entitiesInside.contains(entity)) {
-                entitiesDebounced.replace(entity, DEBOUNCE_DURATION);
-            }
-        });
 
         // Sync to LW Door
         ServerLevel fountainLevel = level.getServer().getLevel(lightDoorDim);

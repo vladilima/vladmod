@@ -19,16 +19,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.portal.DimensionTransition;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.vladilima.vladmod.darkworld.DarkWorld.DARK_WORLD_SIZE;
 
 public class DarknessBlock extends Block implements EntityBlock {
     public DarknessBlock(Properties properties) {
@@ -80,12 +76,12 @@ public class DarknessBlock extends Block implements EntityBlock {
                                 .findAny().orElse(null);
 
                         if (greatDoor != null) {
+                            BlockPos lwTpPos = greatDoor.getBlockPos().relative(greatDoor.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING));
                             DimensionTransition dimTransition = new DimensionTransition(darkWorldServerLevel,
-                                    greatDoor.getBlockPos().getBottomCenter(), entity.getDeltaMovement(), entity.getYRot(), entity.getXRot(),
+                                    lwTpPos.getBottomCenter(), entity.getDeltaMovement(), entity.getYRot(), entity.getXRot(),
                                     DimensionTransition.DO_NOTHING
                             );
 
-                            greatDoor.entitiesDebounced.put(entity, GreatDoorCoreBlockEntity.DEBOUNCE_DURATION);
                             entity.changeDimension(dimTransition);
                         } else {
                             VladMod.LOGGER.error("Found no Great Door");
