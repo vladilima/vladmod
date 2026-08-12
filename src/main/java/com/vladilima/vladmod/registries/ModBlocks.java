@@ -8,6 +8,7 @@ import com.vladilima.vladmod.blocks.great_door.GreatDoorCoreBlock;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorStructure;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
@@ -49,6 +50,18 @@ public class ModBlocks {
                     .noTerrainParticles()
                     .air()
                     .replaceable()
+    );
+
+    public static final DeferredBlock<Block> WOBBLY_THING = BLOCKS.registerBlock(
+            "wobbly_thing",
+            DoublePlantBlock::new,
+            BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_LIGHT_GRAY)
+                    .noCollission()
+                    .instabreak()
+                    .sound(SoundType.HONEY_BLOCK)
+                    .offsetType(BlockBehaviour.OffsetType.XZ)
+                    .pushReaction(PushReaction.DESTROY)
     );
 
     private static final BlockBehaviour.Properties GREAT_DOOR_PROPERTIES = BlockBehaviour.Properties.of().strength(-1, 3600000.0F).pushReaction(PushReaction.BLOCK).noTerrainParticles().noLootTable().sound(SoundType.EMPTY).noOcclusion();

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "vladmod:block/wobbly_thing"
+    },
+    "half=upper": {
+      "model": "vladmod:empty"
+    }
+  }
+}

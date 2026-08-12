@@ -1,0 +1,26 @@
+{
+	"loader": "neoforge:separate_transforms",
+	"base": {
+		"parent": "vladmod:block/wobbly_thing_block"
+	},
+	"perspectives": {
+		"thirdperson_lefthand": {
+			"parent": "vladmod:item/wobbly_thing"
+		},
+		"thirdperson_righthand": {
+			"parent": "vladmod:item/wobbly_thing"
+		},
+		"firstperson_lefthand": {
+			"parent": "vladmod:item/wobbly_thing"
+		},
+		"firstperson_righthand": {
+			"parent": "vladmod:item/wobbly_thing"
+		},
+		"gui": {
+			"parent": "vladmod:item/wobbly_thing"
+		},
+		"ground": {
+			"parent": "vladmod:item/wobbly_thing"
+		}
+	}
+}

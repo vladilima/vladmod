@@ -6,6 +6,7 @@ import com.vladilima.vladmod.items.FountainMakerItem;
 import com.vladilima.vladmod.items.NetherStarArrowItem;
 import com.vladilima.vladmod.items.StandArrowItem;
 import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -30,6 +31,8 @@ public class ModItems {
 
     public static final DeferredItem<Item> FOUNTAIN_MAKER = ITEMS.register("fountain_maker",
             () -> new FountainMakerItem(new Item.Properties().stacksTo(1)));
+
+    public static final DeferredItem<BlockItem> WOBBLY_THING = ITEMS.registerSimpleBlockItem(ModBlocks.WOBBLY_THING);
 
 
     public static void register(IEventBus eventBus) {

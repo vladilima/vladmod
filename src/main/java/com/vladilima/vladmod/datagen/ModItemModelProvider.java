@@ -16,5 +16,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.EXP_BERRY.get());
         basicItem(ModItems.NETHER_STAR_ARROW.get());
         basicItem(ModItems.STAND_ARROW.get());
+
+        basicItem(ModItems.WOBBLY_THING.get());
     }
 }

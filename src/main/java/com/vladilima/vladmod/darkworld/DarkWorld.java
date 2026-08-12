@@ -33,7 +33,7 @@ public class DarkWorld {
         this.greatDoors = greatDoors;
     }
 
-    public static final int DARK_WORLD_SIZE = 16;
+    public static final int DARK_WORLD_SIZE = 24;
 
     public static DarkWorld buildDarkWorld(Level level, DarkFountain darkFountain) {
         Level darkWorldLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);

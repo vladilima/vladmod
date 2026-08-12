@@ -1,0 +1,54 @@
+{
+  "format_version": "1.9.0",
+  "credit": "Made with Blockbench",
+  "texture_size": [32, 32],
+  "textures": {
+    "0": "vladmod:block/wobbly_thing",
+    "particle": "vladmod:block/wobbly_thing"
+  },
+  "elements": [
+    {
+      "name": "head",
+      "from": [4, 13, 4],
+      "to": [12, 21, 12],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8, 13, 8]},
+      "faces": {
+        "north": {"uv": [12, 0, 16, 4], "texture": "#0"},
+        "east": {"uv": [12, 0, 16, 4], "texture": "#0"},
+        "south": {"uv": [12, 0, 16, 4], "texture": "#0"},
+        "west": {"uv": [12, 0, 16, 4], "texture": "#0"},
+        "up": {"uv": [12, 0, 16, 4], "texture": "#0"},
+        "down": {"uv": [12, 0, 16, 4], "texture": "#0"}
+      }
+    },
+    {
+      "name": "mast",
+      "from": [7, 1, 7],
+      "to": [9, 13, 9],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8, 1, 8]},
+      "faces": {
+        "north": {"uv": [11, 0, 12, 6], "texture": "#0"},
+        "east": {"uv": [11, 0, 12, 6], "texture": "#0"},
+        "south": {"uv": [11, 0, 12, 6], "texture": "#0"},
+        "west": {"uv": [11, 0, 12, 6], "texture": "#0"},
+        "up": {"uv": [12, 1, 11, 0], "texture": "#0"},
+        "down": {"uv": [12, 6, 11, 5], "texture": "#0"}
+      }
+    },
+    {
+      "name": "base",
+      "from": [3, 0, 3],
+      "to": [13, 1, 13],
+      "rotation": {"angle": 0, "axis": "y", "origin": [8, 0.5, 8]},
+      "faces": {
+        "north": {"uv": [5, 0, 10, 0.5], "texture": "#0"},
+        "east": {"uv": [5, 0, 10, 0.5], "texture": "#0"},
+        "south": {"uv": [5, 0, 10, 0.5], "texture": "#0"},
+        "west": {"uv": [5, 0, 10, 0.5], "texture": "#0"},
+        "up": {"uv": [5, 5, 0, 0], "texture": "#0"},
+        "down": {"uv": [5, 5, 0, 10], "texture": "#0"}
+      }
+    }
+  ],
+  "display": {}
+}
