@@ -59,10 +59,9 @@ public class DarkWorld {
 
         Optional<BoundingBox> boundingBox = BoundingBox.encapsulatingPositions(darkWorldAreaRelative);
         BoundingBox finalBoundingBox = getNewDarkWorldLocation(boundingBox.orElseThrow());
-        Registry<DarkWorldTheme> darkWorldThemeRegistry = level.registryAccess().registryOrThrow(DarkWorldTheme.REGISTRY_KEY);
 
         // Placeholder Theme + Generator Get (REPLACE WITH THEME CALCULATION)
-        DarkWorldTheme theme = darkWorldThemeRegistry.getOptional(ResourceLocation.fromNamespaceAndPath(VladMod.MOD_ID, "cliffs")).orElseThrow();
+        DarkWorldTheme theme = DarkWorldTheme.calculateTheme(level, darkFountain.roomInfo());
         Generator generator = getGeneratorFromTheme(theme).orElseThrow();
 
         // Definitive In-Game Dark World Area Blocks
