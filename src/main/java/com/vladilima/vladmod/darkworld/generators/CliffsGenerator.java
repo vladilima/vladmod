@@ -252,9 +252,17 @@ public class CliffsGenerator extends Generator {
                 }
             }
         }
+        generationInfo.greatDoors = greatDoors;
+
+        // Places Wobbly Things
+        int genAreaSizeSqrt = (int) Math.sqrt(generationInfo.generationArea.size());
+        int thingCount = GenerationUtils.randInt(genAreaSizeSqrt / 10, genAreaSizeSqrt / 5);
+        for (int i = 0; i < thingCount; i++) {
+            BlockPos thingPos = Util.getRandom(generationInfo.surfaceBlocks, level.random);
+            level.setBlockAndUpdate(thingPos.above(), ModBlocks.WOBBLY_THING.get().defaultBlockState());
+        }
 
         VladMod.LOGGER.debug("Finished populating DW with Features.");
-        generationInfo.greatDoors = greatDoors;
         return generationInfo;
     }
 
