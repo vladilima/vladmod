@@ -68,6 +68,7 @@ public record DarkWorldTheme(String generator, float requiredWeight, List<BlockT
             }
         }
 
+        VladMod.LOGGER.info("Chosen Theme: {}", chosenTheme.orElse(null));
         return chosenTheme.orElse(DEFAULT);
     }
 }

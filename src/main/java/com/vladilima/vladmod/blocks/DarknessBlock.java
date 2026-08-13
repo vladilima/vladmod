@@ -70,6 +70,7 @@ public class DarknessBlock extends Block implements EntityBlock {
 
                         GreatDoorCoreBlockEntity greatDoor = blockEntity.fountain.darkWorld.greatDoors.stream()
                                 .map(gDoorPos -> (GreatDoorCoreBlockEntity) darkWorldServerLevel.getBlockEntity(gDoorPos))
+                                .filter(Objects::nonNull)
                                 .filter(greatDoorBE ->
                                         greatDoorBE.lightDoorPos.equals(doorPos) &&
                                                 greatDoorBE.lightDoorDim.equals(level.dimension()))

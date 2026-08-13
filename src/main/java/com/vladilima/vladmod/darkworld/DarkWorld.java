@@ -33,7 +33,7 @@ public class DarkWorld {
         this.greatDoors = greatDoors;
     }
 
-    public static final int DARK_WORLD_SIZE = 24;
+    public static final int DARK_WORLD_SIZE = 32;
 
     public static DarkWorld buildDarkWorld(Level level, DarkFountain darkFountain) {
         Level darkWorldLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
@@ -87,7 +87,7 @@ public class DarkWorld {
                 .filter((fountain) -> fountain.darkWorld != null)
                 .map((fountain) -> fountain.darkWorld).toList();
         for (DarkWorld darkWorld : darkWorlds) {
-            if (darkWorld.boundingBox.intersects(newDWBoundingBox.inflatedBy(128, 0, 128))) {
+            if (darkWorld.boundingBox.inflatedBy(128, 0, 128).intersects(newDWBoundingBox.inflatedBy(128, 0, 128))) {
                 return false;
             }
         }
