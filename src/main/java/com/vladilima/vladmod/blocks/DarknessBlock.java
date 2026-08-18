@@ -3,13 +3,16 @@ package com.vladilima.vladmod.blocks;
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorCoreBlockEntity;
+import com.vladilima.vladmod.networking.s2c_payloads.DarkWorldInfoPacket;
 import com.vladilima.vladmod.registries.ModBlockEntities;
 import com.vladilima.vladmod.darkworld.DimensionManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DoorBlock;
@@ -22,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.portal.DimensionTransition;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -83,6 +87,9 @@ public class DarknessBlock extends Block implements EntityBlock {
                                     DimensionTransition.DO_NOTHING
                             );
 
+                            if (entity instanceof Player player) {
+                                PacketDistributor.sendToPlayer((ServerPlayer) player, new DarkWorldInfoPacket(blockEntity.fountain.darkWorld.fountainPos));
+                            }
                             entity.changeDimension(dimTransition);
                         } else {
                             VladMod.LOGGER.error("Found no Great Door");

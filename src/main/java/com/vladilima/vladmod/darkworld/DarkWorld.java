@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DarkWorld {
     public final BoundingBox boundingBox;
     public List<BlockPos> greatDoors;
+    public BlockPos fountainPos;
 
     public static final Codec<DarkWorld> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             BoundingBox.CODEC.fieldOf("boundingBox").forGetter(DarkWorld::boundingBox),
@@ -29,6 +30,7 @@ public class DarkWorld {
     ).apply(instance, DarkWorld::new));
 
     public DarkWorld(BoundingBox boundingBox, List<BlockPos> greatDoors) {
+        this.fountainPos = boundingBox.getCenter();
         this.boundingBox = boundingBox;
         this.greatDoors = greatDoors;
     }

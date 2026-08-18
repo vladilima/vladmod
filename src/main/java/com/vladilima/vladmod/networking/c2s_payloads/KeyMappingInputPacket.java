@@ -1,7 +1,7 @@
 package com.vladilima.vladmod.networking.c2s_payloads;
 
-import com.vladilima.vladmod.networking.C2SPackets;
 import com.vladilima.vladmod.powers.StandUser;
+import com.vladilima.vladmod.registries.ModPackets;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -10,7 +10,7 @@ import net.neoforged.neoforge.network.handling.IPayloadHandler;
 
 public record KeyMappingInputPacket(String key) implements CustomPacketPayload {
 
-    public static final Type<KeyMappingInputPacket> ID = C2SPackets.makeId("summon_stand_keybind");
+    public static final Type<KeyMappingInputPacket> ID = ModPackets.makeId("client_keybind_input");
     public static final StreamCodec<FriendlyByteBuf, KeyMappingInputPacket> CODEC =
             StreamCodec.composite(
                     ByteBufCodecs.STRING_UTF8, KeyMappingInputPacket::key,
