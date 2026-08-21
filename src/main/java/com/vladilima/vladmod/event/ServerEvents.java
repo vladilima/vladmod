@@ -1,12 +1,17 @@
 package com.vladilima.vladmod.event;
 
 import com.vladilima.vladmod.VladMod;
+import com.vladilima.vladmod.darkworld.DarkWorld;
+import com.vladilima.vladmod.darkworld.DimensionManager;
 import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.fountain.FountainManager;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
@@ -64,4 +69,17 @@ public class ServerEvents {
     private static boolean isLevelCorrect(LevelAccessor level) {
         return Objects.requireNonNull(Objects.requireNonNull(level.getServer()).getLevel(Level.OVERWORLD)).dimensionType() == level.dimensionType();
     }
+
+    @SubscribeEvent
+    public static void playerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity().level() instanceof ServerLevel level) {
+            if (level.dimension() == DimensionManager.DARK_WORLD) {
+                DarkWorld darkWorld = DarkWorld.findDarkWorld(event.getEntity().blockPosition());
+                if (darkWorld != null) {
+                    darkWorld.sendEnterPacket((ServerPlayer) event.getEntity());
+                }
+            }
+        }
+    }
+
 }

@@ -7,14 +7,15 @@ import com.vladilima.vladmod.darkworld.generators.Generator;
 import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.fountain.FountainManager;
 import com.vladilima.vladmod.fountain.RoomScanner;
+import com.vladilima.vladmod.networking.s2c_payloads.DarkWorldInfoPacket;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -128,6 +129,23 @@ public class DarkWorld {
         });
 
         VladMod.LOGGER.debug("Finished Placing Blocks. Placed {} Blocks.", i);
+    }
+
+    public void sendEnterPacket(ServerPlayer player) {
+        PacketDistributor.sendToPlayer(player, new DarkWorldInfoPacket(this.fountainPos));
+    }
+
+    public static DarkWorld findDarkWorld(BlockPos pos) {
+        for (DarkFountain fountain : FountainManager.darkFountains) {
+            DarkWorld darkWorld = fountain.darkWorld;
+            if (darkWorld != null) {
+                if (AABB.of(darkWorld.boundingBox).contains(pos.atY(1).getCenter())) {
+                    return darkWorld;
+                }
+            }
+        }
+
+        return null;
     }
 
     public BoundingBox boundingBox() {

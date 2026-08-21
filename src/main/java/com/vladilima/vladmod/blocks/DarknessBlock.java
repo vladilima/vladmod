@@ -3,7 +3,8 @@ package com.vladilima.vladmod.blocks;
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorCoreBlockEntity;
-import com.vladilima.vladmod.networking.s2c_payloads.DarkWorldInfoPacket;
+import com.vladilima.vladmod.darkworld.DarkWorld;
+import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.registries.ModBlockEntities;
 import com.vladilima.vladmod.darkworld.DimensionManager;
 import net.minecraft.core.BlockPos;
@@ -25,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.portal.DimensionTransition;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -60,8 +60,10 @@ public class DarknessBlock extends Block implements EntityBlock {
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (!level.isClientSide()) {
             DarknessBlockEntity blockEntity = (DarknessBlockEntity) level.getBlockEntity(pos);
+            DarkFountain fountain = blockEntity.fountain;
+            DarkWorld darkWorld = fountain.darkWorld;
 
-            if (blockEntity.fountain != null && blockEntity.fountain.darkWorld != null) {
+            if (fountain != null && darkWorld != null) {
                 ServerLevel darkWorldServerLevel = Objects.requireNonNull(level.getServer()).getLevel(DimensionManager.DARK_WORLD);
                 assert darkWorldServerLevel != null;
 
@@ -72,7 +74,7 @@ public class DarknessBlock extends Block implements EntityBlock {
                                         pos.relative(dir) :
                                         pos.relative(dir).below();
 
-                        GreatDoorCoreBlockEntity greatDoor = blockEntity.fountain.darkWorld.greatDoors.stream()
+                        GreatDoorCoreBlockEntity greatDoor = darkWorld.greatDoors.stream()
                                 .map(gDoorPos -> (GreatDoorCoreBlockEntity) darkWorldServerLevel.getBlockEntity(gDoorPos))
                                 .filter(Objects::nonNull)
                                 .filter(greatDoorBE ->
@@ -88,7 +90,7 @@ public class DarknessBlock extends Block implements EntityBlock {
                             );
 
                             if (entity instanceof Player player) {
-                                PacketDistributor.sendToPlayer((ServerPlayer) player, new DarkWorldInfoPacket(blockEntity.fountain.darkWorld.fountainPos));
+                                darkWorld.sendEnterPacket((ServerPlayer) player);
                             }
                             entity.changeDimension(dimTransition);
                         } else {
