@@ -6,7 +6,6 @@ import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.darkworld.DarkWorldClientData;
 import com.vladilima.vladmod.fountain.render.DarkFountainModel;
 import com.vladilima.vladmod.registries.ModRenderTypes;
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -14,7 +13,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec2;
@@ -23,7 +21,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import org.joml.Quaternionf;
 
 @EventBusSubscriber(modid = VladMod.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents {
@@ -76,7 +73,7 @@ public class ClientEvents {
                 fountainPos.getZ() - cameraPos.z
         );
 
-        Vec2 fountain2dPos = new Vec2(fountainPos.getX(), fountainPos.getZ());
+        Vec2 fountain2dPos = new Vec2(fountainPos.getX() - 2.5f, fountainPos.getZ() + .5f);
         Vec2 camera2dPos = new Vec2((float) cameraPos.x, (float) cameraPos.z);
 
         double distance2d = Mth.sqrt(fountain2dPos.distanceToSqr(camera2dPos));
@@ -85,13 +82,14 @@ public class ClientEvents {
         distanceScale = Math.max(distanceScale, 1f);
         poseStack.scale(distanceScale, distanceScale, distanceScale);
 
+        // Billboarding it up
+        double fountainRotation = 180.0 / Math.PI * Math.atan2(fountain2dPos.x - camera2dPos.x, camera2dPos.y - fountain2dPos.y);
+
         float yPosOffset = 15;
         for (int i = 0; i < 12; i++) {
             poseStack.pushPose();
-            poseStack.translate(3.5f, yPosOffset * i, .5f);
-            renderFountainSection(poseStack, buffer, fountainTexture);
-            poseStack.rotateAround(Axis.YP.rotationDegrees(90), 0, 0, 0);
-            poseStack.translate(3f, 0f, -3f);
+            poseStack.translate(.5f, yPosOffset * i, .5f);
+            poseStack.rotateAround(Axis.YN.rotationDegrees((float) fountainRotation), -3f, 0f, 0f);
             renderFountainSection(poseStack, buffer, fountainTexture);
             poseStack.popPose();
         }
