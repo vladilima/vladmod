@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.darkworld.DarkWorldClientData;
+import com.vladilima.vladmod.darkworld.DimensionManager;
 import com.vladilima.vladmod.fountain.render.DarkFountainModel;
 import com.vladilima.vladmod.registries.ModRenderTypes;
 import net.minecraft.client.DeltaTracker;
@@ -26,7 +27,6 @@ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 public class ClientEvents {
 
     private static final ByteBufferBuilder FOUNTAIN_BUFFER = new ByteBufferBuilder(65536);
-    private static final float COS45 = 0.70710678f;
 
     private static DarkFountainModel fountainModel;
     private static DarkFountainModel getFountainModel() {
@@ -42,8 +42,7 @@ public class ClientEvents {
             if (level == null)
                 return;
 
-
-            if (DarkWorldClientData.fountainPos != null) {
+            if (DarkWorldClientData.fountainPos != null && level.dimension() == DimensionManager.DARK_WORLD) {
                 renderDarkFountain(
                         event.getPoseStack(),
                         MultiBufferSource.immediate(FOUNTAIN_BUFFER),
