@@ -7,6 +7,9 @@
   "item.vladmod.nether_star_arrow": "Nether Star Arrow",
   "item.vladmod.stand_arrow": "Stand Arrow",
 
+  "item.vladmod.fountain_maker": "Knife",
+  "item.vladmod.wobbly_thing": "Wobbly Thing",
+
   "vladmod.configuration.title": "Vlad's Mod Configs",
   "vladmod.configuration.section.vladmod.common.toml": "Vlad's Mod Configs",
   "vladmod.configuration.section.vladmod.common.toml.title": "Vlad's Mod Configs",

@@ -18,5 +18,7 @@ public class ModItemModelProvider extends ItemModelProvider {
         basicItem(ModItems.STAND_ARROW.get());
 
         basicItem(ModItems.WOBBLY_THING.get());
+
+        basicItem(ModItems.FOUNTAIN_MAKER.get());
     }
 }
