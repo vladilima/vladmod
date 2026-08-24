@@ -1,4 +1,4 @@
-package com.vladilima.vladmod.darkworld;
+package com.vladilima.vladmod.darkworld.generation;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -1,12 +1,6 @@
 package com.vladilima.vladmod;
 
-import com.vladilima.vladmod.darkworld.DarkWorldTheme;
 import com.vladilima.vladmod.registries.*;
-import com.vladilima.vladmod.event.ServerEvents;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -21,8 +15,6 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-
-import java.util.List;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(VladMod.MOD_ID)

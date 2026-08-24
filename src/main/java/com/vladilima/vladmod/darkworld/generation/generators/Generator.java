@@ -1,4 +1,4 @@
-package com.vladilima.vladmod.darkworld.generators;
+package com.vladilima.vladmod.darkworld.generation.generators;
 
 import com.vladilima.vladmod.fountain.DarkFountain;
 import net.minecraft.core.BlockPos;

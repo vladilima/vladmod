@@ -1,9 +1,9 @@
-package com.vladilima.vladmod.darkworld.generators;
+package com.vladilima.vladmod.darkworld.generation.generators;
 
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorCoreBlockEntity;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorStructure;
-import com.vladilima.vladmod.darkworld.GenerationUtils;
+import com.vladilima.vladmod.darkworld.generation.GenerationUtils;
 import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.registries.ModBlocks;
 import net.minecraft.Util;

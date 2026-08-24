@@ -1,16 +1,13 @@
 package com.vladilima.vladmod.registries;
 
-import com.mojang.serialization.Codec;
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.attachments.DarkFountainsAttachment;
-import com.vladilima.vladmod.darkworld.DarkWorldTheme;
 import com.vladilima.vladmod.fountain.DarkFountain;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 

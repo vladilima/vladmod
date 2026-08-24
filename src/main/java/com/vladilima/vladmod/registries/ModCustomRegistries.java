@@ -1,8 +1,8 @@
 package com.vladilima.vladmod.registries;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.darkworld.DarkWorldGenerators;
-import com.vladilima.vladmod.darkworld.DarkWorldTheme;
+import com.vladilima.vladmod.darkworld.generation.DarkWorldGenerators;
+import com.vladilima.vladmod.darkworld.generation.DarkWorldTheme;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 

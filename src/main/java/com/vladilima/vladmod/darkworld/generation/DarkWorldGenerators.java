@@ -1,7 +1,7 @@
-package com.vladilima.vladmod.darkworld;
+package com.vladilima.vladmod.darkworld.generation;
 
-import com.vladilima.vladmod.darkworld.generators.CliffsGenerator;
-import com.vladilima.vladmod.darkworld.generators.Generator;
+import com.vladilima.vladmod.darkworld.generation.generators.CliffsGenerator;
+import com.vladilima.vladmod.darkworld.generation.generators.Generator;
 
 import java.util.HashMap;
 

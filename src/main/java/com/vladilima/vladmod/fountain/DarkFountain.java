@@ -1,7 +1,7 @@
 package com.vladilima.vladmod.fountain;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.darkworld.GenerationUtils;
+import com.vladilima.vladmod.darkworld.generation.GenerationUtils;
 import com.vladilima.vladmod.registries.ModBlocks;
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
 import com.vladilima.vladmod.darkworld.DarkWorld;

@@ -1,4 +1,4 @@
-package com.vladilima.vladmod.darkworld;
+package com.vladilima.vladmod.darkworld.generation;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
