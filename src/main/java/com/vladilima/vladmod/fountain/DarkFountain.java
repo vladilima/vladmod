@@ -1,6 +1,7 @@
 package com.vladilima.vladmod.fountain;
 
 import com.vladilima.vladmod.VladMod;
+import com.vladilima.vladmod.darkworld.DarkWorldManager;
 import com.vladilima.vladmod.darkworld.generation.GenerationUtils;
 import com.vladilima.vladmod.registries.ModBlocks;
 import com.vladilima.vladmod.blocks.entity.DarknessBlockEntity;
@@ -46,7 +47,10 @@ public class DarkFountain {
         this.currentBlock = currentBlock;
         this.ticksAlive = ticksAlive;
         this.isFilled = isFilled;
-        this.darkWorld = darkWorld.orElse(null);
+
+        darkWorld.ifPresent(tempDW -> this.darkWorld = DarkWorldManager.darkWorlds.stream()
+                .filter((darkWorldFound -> tempDW.fountainPos.equals(darkWorldFound.fountainPos)))
+                .findAny().orElse(null));
     }
 
     private static final int DARKNESS_SPREAD_DELAY = 5;

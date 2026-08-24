@@ -2,9 +2,11 @@ package com.vladilima.vladmod.event;
 
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.darkworld.DarkWorld;
+import com.vladilima.vladmod.darkworld.DarkWorldManager;
 import com.vladilima.vladmod.darkworld.DimensionManager;
 import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.fountain.FountainManager;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -21,6 +23,7 @@ import java.util.Objects;
 public class ServerEvents {
 
     public static boolean loadedFountains = false;
+    public static boolean loadedDarkWorlds = false;
 
     @SubscribeEvent
     public static void levelTick(LevelTickEvent.Pre event) {
@@ -38,6 +41,10 @@ public class ServerEvents {
                 loadedFountains = true;
             }
 
+            if (!loadedDarkWorlds) {
+                loadedDarkWorlds = true;
+            }
+
             if (FountainManager.darkFountains != null && !FountainManager.darkFountains.isEmpty()) {
                 FountainManager.darkFountains.remove(null);
                 for (DarkFountain fountain : FountainManager.darkFountains) {
@@ -53,15 +60,18 @@ public class ServerEvents {
     public static void dataAttachmentSave(LevelEvent.Save event) {
         LevelAccessor level = event.getLevel();
         if (level.getServer() != null && isLevelCorrect(level)) {
+            DarkWorldManager.save(level.getServer());
             FountainManager.save(level.getServer());
         }
     }
 
     @SubscribeEvent
     public static void dataAttachmentLoad(LevelEvent.Load event) {
+        loadedDarkWorlds = false;
         loadedFountains = false;
         LevelAccessor level = event.getLevel();
         if (level.getServer() != null && isLevelCorrect(level)) {
+            DarkWorldManager.load(level.getServer());
             FountainManager.load(level.getServer());
         }
     }

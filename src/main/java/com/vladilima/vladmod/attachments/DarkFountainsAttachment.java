@@ -2,7 +2,6 @@ package com.vladilima.vladmod.attachments;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.vladilima.vladmod.darkworld.DarkWorld;
 import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.fountain.RoomScanner.ScanResult;
 import net.minecraft.core.BlockPos;
@@ -17,7 +16,7 @@ public class DarkFountainsAttachment {
             BlockPos.CODEC.fieldOf("currentBlock").forGetter(DarkFountain::currentBlock),
             Codec.INT.fieldOf("ticksAlive").forGetter(DarkFountain::ticksAlive),
             Codec.BOOL.fieldOf("isFilled").forGetter(DarkFountain::isFilled),
-            DarkWorld.CODEC.optionalFieldOf("darkWorld").forGetter((fountain) -> Optional.ofNullable(fountain.darkWorld))
+            DarkWorldsAttachment.CODEC.optionalFieldOf("darkWorld").forGetter((fountain) -> Optional.ofNullable(fountain.darkWorld))
     ).apply(instance, DarkFountain::new));
 
 

@@ -1,7 +1,5 @@
 package com.vladilima.vladmod.darkworld;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.darkworld.generation.DarkWorldGenerators;
 import com.vladilima.vladmod.darkworld.generation.DarkWorldTheme;
@@ -27,11 +25,6 @@ public class DarkWorld {
     public final BoundingBox boundingBox;
     public List<BlockPos> greatDoors;
     public BlockPos fountainPos;
-
-    public static final Codec<DarkWorld> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            BoundingBox.CODEC.fieldOf("boundingBox").forGetter(DarkWorld::boundingBox),
-            BlockPos.CODEC.listOf().fieldOf("greatDoors").forGetter(DarkWorld::greatDoors)
-    ).apply(instance, DarkWorld::new));
 
     public DarkWorld(BoundingBox boundingBox, List<BlockPos> greatDoors) {
         this.fountainPos = boundingBox.getCenter();
@@ -78,7 +71,9 @@ public class DarkWorld {
         genInfo = generator.surface(darkWorldLevel, genInfo);
         genInfo = generator.features(darkWorldLevel, genInfo);
 
-        return new DarkWorld(finalBoundingBox, genInfo.greatDoors);
+        DarkWorld newDarkWorld = new DarkWorld(finalBoundingBox, genInfo.greatDoors);
+        DarkWorldManager.darkWorlds.add(newDarkWorld);
+        return newDarkWorld;
     }
 
     private static BoundingBox getNewDarkWorldLocation(BoundingBox newDWBoundingBox) {
