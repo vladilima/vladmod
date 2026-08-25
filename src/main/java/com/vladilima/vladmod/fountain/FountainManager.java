@@ -1,7 +1,6 @@
 package com.vladilima.vladmod.fountain;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.darkworld.DarkWorldManager;
 import com.vladilima.vladmod.registries.ModAttachmentTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -46,10 +45,6 @@ public class FountainManager {
     public static void load(MinecraftServer server) {
         Level overworldLevel = server.getLevel(Level.OVERWORLD);
         assert overworldLevel != null;
-
-        while (DarkWorldManager.darkWorlds == null) {
-            continue; // Wait for Dark World List
-        }
 
         darkFountains = new ArrayList<>(overworldLevel.getData(ModAttachmentTypes.DARK_FOUNTAINS));
         VladMod.LOGGER.info("Loaded Dark Fountains: " + FountainManager.darkFountains);

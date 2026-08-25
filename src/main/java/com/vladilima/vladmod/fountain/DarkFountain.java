@@ -48,9 +48,7 @@ public class DarkFountain {
         this.ticksAlive = ticksAlive;
         this.isFilled = isFilled;
 
-        darkWorld.ifPresent(tempDW -> this.darkWorld = DarkWorldManager.darkWorlds.stream()
-                .filter((darkWorldFound -> tempDW.fountainPos.equals(darkWorldFound.fountainPos)))
-                .findAny().orElse(null));
+        this.darkWorld = darkWorld.orElse(null);
     }
 
     private static final int DARKNESS_SPREAD_DELAY = 5;

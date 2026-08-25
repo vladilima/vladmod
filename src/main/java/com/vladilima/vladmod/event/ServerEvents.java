@@ -6,7 +6,6 @@ import com.vladilima.vladmod.darkworld.DarkWorldManager;
 import com.vladilima.vladmod.darkworld.DimensionManager;
 import com.vladilima.vladmod.fountain.DarkFountain;
 import com.vladilima.vladmod.fountain.FountainManager;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -31,17 +30,22 @@ public class ServerEvents {
 
         if (!level.isClientSide()) {
             if (!loadedFountains) {
-                if (FountainManager.darkFountains != null) {
-                    for (DarkFountain fountain : FountainManager.darkFountains) {
-                        if (fountain != null) {
-                            DarkFountain.loadDarkness(level.getServer(), fountain);
-                        }
+                for (DarkFountain fountain : FountainManager.darkFountains) {
+                    if (fountain != null) {
+                        DarkFountain.loadDarkness(level.getServer(), fountain);
                     }
                 }
                 loadedFountains = true;
             }
 
             if (!loadedDarkWorlds) {
+                for (DarkFountain fountain : FountainManager.darkFountains) {
+                    if (fountain != null && fountain.darkWorld != null) {
+                        fountain.darkWorld = DarkWorldManager.darkWorlds.stream()
+                                .filter((darkWorldFound -> fountain.darkWorld.fountainPos.equals(darkWorldFound.fountainPos)))
+                                .findAny().orElse(null);
+                    }
+                }
                 loadedDarkWorlds = true;
             }
 
