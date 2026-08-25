@@ -46,8 +46,8 @@ public class VladModClient {
         VladMod.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 
-    public static final Lazy<KeyMapping> SOUL_ACT = Lazy.of(() -> new KeyMapping(
-            "key.vladmod.soul_act", // Will be localized using this translation key
+    public static final Lazy<KeyMapping> SOUL_CONFIRM = Lazy.of(() -> new KeyMapping(
+            "key.vladmod.soul_confirm", // Will be localized using this translation key
             KeyConflictContext.IN_GAME, // Mapping can only be used when a screen isn't open
             KeyModifier.NONE, // Default mapping requires nothing to be held down
             InputConstants.Type.KEYSYM, // Default mapping is on the keyboard
@@ -59,7 +59,7 @@ public class VladModClient {
     @SubscribeEvent // on the mod event bus only on the physical client
     public static void registerBindings(RegisterKeyMappingsEvent event) {
         VladMod.LOGGER.info("Registering Key Mappings...");
-        KEYMAPPINGS.add(SOUL_ACT.get());
+        KEYMAPPINGS.add(SOUL_CONFIRM.get());
 
         for (KeyMapping keyMapping : KEYMAPPINGS) {
             event.register(keyMapping);
