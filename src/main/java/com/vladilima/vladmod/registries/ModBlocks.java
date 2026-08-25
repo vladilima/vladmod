@@ -2,7 +2,6 @@ package com.vladilima.vladmod.registries;
 
 import com.vladilima.vladmod.VladMod;
 import com.vladilima.vladmod.blocks.DarknessBlock;
-import com.vladilima.vladmod.blocks.ExpBerryBushBlock;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorComponentBlock;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorCoreBlock;
 import com.vladilima.vladmod.blocks.great_door.GreatDoorStructure;
@@ -27,17 +26,6 @@ import java.util.function.Supplier;
 
 public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(VladMod.MOD_ID);
-
-    public static final DeferredBlock<Block> EXP_BERRY_BUSH = BLOCKS.registerBlock(
-            "exp_berry_bush",
-                ExpBerryBushBlock::new,
-                BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.PLANT)
-                        .randomTicks()
-                        .noCollission()
-                        .sound(SoundType.SWEET_BERRY_BUSH)
-                        .pushReaction(PushReaction.DESTROY)
-    );
 
     public static final DeferredBlock<Block> DARKNESS = BLOCKS.registerBlock(
             "darkness",

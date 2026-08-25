@@ -13,9 +13,7 @@ public class ModSounds {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS =
             DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, VladMod.MOD_ID);
 
-    public static final Supplier<SoundEvent> STAND_SUMMON = registerSoundEvent("stand_summon");
-    public static final Supplier<SoundEvent> STAND_PUNCH = registerSoundEvent("stand_punch");
-    public static final Supplier<SoundEvent> STAND_PUNCH_MISS = registerSoundEvent("stand_punch_miss");
+//    public static final Supplier<SoundEvent> STAND_SUMMON = registerSoundEvent("stand_summon");
 
     private static Supplier<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(VladMod.MOD_ID, name);

@@ -1,11 +1,11 @@
 package com.vladilima.vladmod.networking.c2s_payloads;
 
-import com.vladilima.vladmod.powers.StandUser;
 import com.vladilima.vladmod.registries.ModPackets;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadHandler;
 
 public record KeyMappingInputPacket(String key) implements CustomPacketPayload {
@@ -23,15 +23,9 @@ public record KeyMappingInputPacket(String key) implements CustomPacketPayload {
 
     public static IPayloadHandler<KeyMappingInputPacket> getPayloadHandler() {
         return (payload, context) -> {
-            StandUser player = (StandUser) context.player();
+            Player player = context.player();
 
             switch (payload.key()) {
-                case "key.vladmod.stand_toggle":
-                    player.vladmod$toggleStand(context.player().level());
-                    break;
-                case "key.vladmod.ability_1":
-                    player.vladmod$ability1();
-                    break;
                 case "key.vladmod.soul_act":
                     System.out.println("Soul ACT Button");
                     break;

@@ -1,11 +1,9 @@
 package com.vladilima.vladmod.datagen;
 
 import com.vladilima.vladmod.VladMod;
-import com.vladilima.vladmod.registries.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +18,6 @@ public class ModItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        tag(ItemTags.ARROWS)
-                .add(ModItems.NETHER_STAR_ARROW.get());
+
     }
 }

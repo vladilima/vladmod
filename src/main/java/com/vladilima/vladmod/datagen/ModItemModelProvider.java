@@ -13,10 +13,6 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        basicItem(ModItems.EXP_BERRY.get());
-        basicItem(ModItems.NETHER_STAR_ARROW.get());
-        basicItem(ModItems.STAND_ARROW.get());
-
         basicItem(ModItems.WOBBLY_THING.get());
 
         basicItem(ModItems.FOUNTAIN_MAKER.get());

@@ -18,11 +18,9 @@ public class ModCreativeTab {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.vladmod")) //The language key for the title of your CreativeModeTab
             .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> ModItems.EXP_BERRY.get().getDefaultInstance())
+            .icon(() -> ModItems.FOUNTAIN_MAKER.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(ModItems.EXP_BERRY.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
-                output.accept(ModItems.NETHER_STAR_ARROW.get());
-                output.accept(ModItems.STAND_ARROW.get());
+                output.accept(ModItems.FOUNTAIN_MAKER.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
             }).build());
 
 

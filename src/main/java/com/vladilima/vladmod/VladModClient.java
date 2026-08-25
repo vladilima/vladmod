@@ -2,14 +2,11 @@ package com.vladilima.vladmod;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.vladilima.vladmod.registries.ModBlockEntityRenderers;
-import com.vladilima.vladmod.registries.ModEntities;
-import com.vladilima.vladmod.entity.client.StarPlatinumRenderer;
 import com.vladilima.vladmod.networking.c2s_payloads.KeyMappingInputPacket;
 import com.vladilima.vladmod.particles.DarknessParticle;
 import com.vladilima.vladmod.registries.ModParticles;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -47,26 +44,7 @@ public class VladModClient {
         // Some client setup code
         VladMod.LOGGER.info("HELLO FROM CLIENT SETUP");
         VladMod.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-
-
-        VladMod.LOGGER.info("Registering Entity Renderers...");
-        EntityRenderers.register(ModEntities.STAR_PLATINUM.get(), StarPlatinumRenderer::new);
     }
-
-    public static final Lazy<KeyMapping> TOGGLE_STAND_MAPPING = Lazy.of(() -> new KeyMapping(
-            "key.vladmod.stand_toggle", // Will be localized using this translation key
-            KeyConflictContext.IN_GAME, // Mapping can only be used when a screen isn't open
-            KeyModifier.NONE, // Default mapping requires nothing to be held down
-            InputConstants.Type.KEYSYM, // Default mapping is on the keyboard
-            GLFW.GLFW_KEY_X, // Default key is Z
-            "key.categories.vladmod.category" // Mapping will be in the modded category
-    ));
-
-    public static final Lazy<KeyMapping> ACTIVATE_ABILITY_1 = Lazy.of(() -> new KeyMapping(
-            "key.vladmod.ability_1", KeyConflictContext.IN_GAME,
-            KeyModifier.NONE, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_C,"key.categories.vladmod.category"
-    ));
 
     public static final Lazy<KeyMapping> SOUL_ACT = Lazy.of(() -> new KeyMapping(
             "key.vladmod.soul_act", // Will be localized using this translation key
@@ -81,9 +59,6 @@ public class VladModClient {
     @SubscribeEvent // on the mod event bus only on the physical client
     public static void registerBindings(RegisterKeyMappingsEvent event) {
         VladMod.LOGGER.info("Registering Key Mappings...");
-
-        KEYMAPPINGS.add(TOGGLE_STAND_MAPPING.get());
-        KEYMAPPINGS.add(ACTIVATE_ABILITY_1.get());
         KEYMAPPINGS.add(SOUL_ACT.get());
 
         for (KeyMapping keyMapping : KEYMAPPINGS) {

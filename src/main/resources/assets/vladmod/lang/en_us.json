@@ -1,12 +1,6 @@
 {
   "itemGroup.vladmod": "Vlad's Mod",
 
-  "block.vladmod.exp_berry_bush": "EXP Berry Bush",
-
-  "item.vladmod.exp_berry": "EXP Berries",
-  "item.vladmod.nether_star_arrow": "Nether Star Arrow",
-  "item.vladmod.stand_arrow": "Stand Arrow",
-
   "item.vladmod.fountain_maker": "Knife",
   "item.vladmod.wobbly_thing": "Wobbly Thing",
 
@@ -19,7 +13,5 @@
   "vladmod.configuration.magicNumber": "Magic Number",
 
   "key.categories.vladmod.category": "Vlad's Mod",
-  "key.vladmod.stand_toggle": "Toggle Stand",
-  "key.vladmod.ability_1": "Ability 1",
   "key.vladmod.soul_act": "Soul ACT"
 }
