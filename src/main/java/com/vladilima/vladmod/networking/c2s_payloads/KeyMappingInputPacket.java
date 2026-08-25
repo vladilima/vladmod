@@ -32,6 +32,9 @@ public record KeyMappingInputPacket(String key) implements CustomPacketPayload {
                 case "key.vladmod.ability_1":
                     player.vladmod$ability1();
                     break;
+                case "key.vladmod.soul_act":
+                    System.out.println("Soul ACT Button");
+                    break;
             }
         };
     }

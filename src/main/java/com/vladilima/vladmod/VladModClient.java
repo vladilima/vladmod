@@ -28,6 +28,8 @@ import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = VladMod.MOD_ID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -56,7 +58,7 @@ public class VladModClient {
             KeyConflictContext.IN_GAME, // Mapping can only be used when a screen isn't open
             KeyModifier.NONE, // Default mapping requires nothing to be held down
             InputConstants.Type.KEYSYM, // Default mapping is on the keyboard
-            GLFW.GLFW_KEY_Z, // Default key is Z
+            GLFW.GLFW_KEY_X, // Default key is Z
             "key.categories.vladmod.category" // Mapping will be in the modded category
     ));
 
@@ -66,20 +68,35 @@ public class VladModClient {
             GLFW.GLFW_KEY_C,"key.categories.vladmod.category"
     ));
 
+    public static final Lazy<KeyMapping> SOUL_ACT = Lazy.of(() -> new KeyMapping(
+            "key.vladmod.soul_act", // Will be localized using this translation key
+            KeyConflictContext.IN_GAME, // Mapping can only be used when a screen isn't open
+            KeyModifier.NONE, // Default mapping requires nothing to be held down
+            InputConstants.Type.KEYSYM, // Default mapping is on the keyboard
+            GLFW.GLFW_KEY_Z, // Default key is Z
+            "key.categories.vladmod.category" // Mapping will be in the modded category
+    ));
+
+    public static final ArrayList<KeyMapping> KEYMAPPINGS = new ArrayList<>();
     @SubscribeEvent // on the mod event bus only on the physical client
     public static void registerBindings(RegisterKeyMappingsEvent event) {
         VladMod.LOGGER.info("Registering Key Mappings...");
-        event.register(TOGGLE_STAND_MAPPING.get());
-        event.register(ACTIVATE_ABILITY_1.get());
+
+        KEYMAPPINGS.add(TOGGLE_STAND_MAPPING.get());
+        KEYMAPPINGS.add(ACTIVATE_ABILITY_1.get());
+        KEYMAPPINGS.add(SOUL_ACT.get());
+
+        for (KeyMapping keyMapping : KEYMAPPINGS) {
+            event.register(keyMapping);
+        }
     }
 
     @SubscribeEvent // on the game event bus only on the physical client
     public static void onClientTick(ClientTickEvent.Post event) {
-        while (TOGGLE_STAND_MAPPING.get().consumeClick()) {
-            PacketDistributor.sendToServer(new KeyMappingInputPacket(TOGGLE_STAND_MAPPING.get().getName()));
-        }
-        while (ACTIVATE_ABILITY_1.get().consumeClick()) {
-            PacketDistributor.sendToServer(new KeyMappingInputPacket(ACTIVATE_ABILITY_1.get().getName()));
+        for (KeyMapping keyMapping : KEYMAPPINGS) {
+            while (keyMapping.consumeClick()) {
+                PacketDistributor.sendToServer(new KeyMappingInputPacket(keyMapping.getName()));
+            }
         }
     }
 
