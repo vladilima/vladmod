@@ -84,10 +84,7 @@ public class DarkWorld {
     }
 
     private static boolean isLocationValid(BoundingBox newDWBoundingBox) {
-        List<DarkWorld> darkWorlds = FountainManager.darkFountains.stream()
-                .filter((fountain) -> fountain.darkWorld != null)
-                .map((fountain) -> fountain.darkWorld).toList();
-        for (DarkWorld darkWorld : darkWorlds) {
+        for (DarkWorld darkWorld : DarkWorldManager.darkWorlds) {
             if (darkWorld.boundingBox.inflatedBy(128, 0, 128).intersects(newDWBoundingBox.inflatedBy(128, 0, 128))) {
                 return false;
             }
