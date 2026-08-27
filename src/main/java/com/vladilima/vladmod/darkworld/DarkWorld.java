@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DarkWorld {
-    public final BoundingBox boundingBox;
+    public final BoundingBox boundingBox; // Only at Y = 1
     public List<BlockPos> greatDoors;
     public BlockPos fountainPos;
 
