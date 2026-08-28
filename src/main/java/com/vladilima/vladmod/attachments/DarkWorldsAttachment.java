@@ -3,6 +3,7 @@ package com.vladilima.vladmod.attachments;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.vladilima.vladmod.darkworld.DarkWorld;
+import com.vladilima.vladmod.fountain.RoomScanner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.neoforged.neoforge.attachment.AttachmentType;
@@ -12,7 +13,8 @@ import java.util.List;
 public class DarkWorldsAttachment {
     public static final Codec<DarkWorld> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             BoundingBox.CODEC.fieldOf("boundingBox").forGetter(DarkWorld::boundingBox),
-            BlockPos.CODEC.listOf().fieldOf("greatDoors").forGetter(DarkWorld::greatDoors)
+            BlockPos.CODEC.listOf().fieldOf("greatDoors").forGetter(DarkWorld::greatDoors),
+            RoomScanner.ScanResult.CODEC.fieldOf("lightWorldRoom").forGetter(DarkWorld::lightWorldRoom)
     ).apply(instance, DarkWorld::new));
 
 

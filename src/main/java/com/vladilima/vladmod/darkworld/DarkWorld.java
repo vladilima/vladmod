@@ -25,11 +25,15 @@ public class DarkWorld {
     public final BoundingBox boundingBox; // Only at Y = 1
     public List<BlockPos> greatDoors;
     public BlockPos fountainPos;
+    public RoomScanner.ScanResult lightWorldRoom;
 
-    public DarkWorld(BoundingBox boundingBox, List<BlockPos> greatDoors) {
+    public DarkWorld(BoundingBox boundingBox, List<BlockPos> greatDoors, RoomScanner.ScanResult lightWorldRoom) {
         this.fountainPos = boundingBox.getCenter();
         this.boundingBox = boundingBox;
+
         this.greatDoors = greatDoors;
+
+        this.lightWorldRoom = lightWorldRoom;
     }
 
     public static final int DARK_WORLD_SIZE = 32;
@@ -71,7 +75,7 @@ public class DarkWorld {
         genInfo = generator.surface(darkWorldLevel, genInfo);
         genInfo = generator.features(darkWorldLevel, genInfo);
 
-        DarkWorld newDarkWorld = new DarkWorld(finalBoundingBox, genInfo.greatDoors);
+        DarkWorld newDarkWorld = new DarkWorld(finalBoundingBox, genInfo.greatDoors, darkFountain.roomInfo());
         DarkWorldManager.darkWorlds.add(newDarkWorld);
         return newDarkWorld;
     }
@@ -148,4 +152,8 @@ public class DarkWorld {
     }
 
     public List<BlockPos> greatDoors() { return greatDoors; }
+
+    public RoomScanner.ScanResult lightWorldRoom() {
+        return lightWorldRoom;
+    }
 }

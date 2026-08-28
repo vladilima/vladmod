@@ -64,7 +64,16 @@ public class DarkFountain {
             } else if (!this.isFilled) { // Room filled for the first time
                 System.out.println("Filled Fountain Room");
                 this.isFilled = true;
-                this.darkWorld = DarkWorld.buildDarkWorld(level, this);
+
+                DarkWorld existingDarkWorld = DarkWorldManager.darkWorlds.stream()
+                        .filter(dWorld -> roomInfo.roomBlocks.contains(dWorld.lightWorldRoom.originPos))
+                        .findAny().orElse(null);
+
+                if (existingDarkWorld != null) {
+                    this.darkWorld = existingDarkWorld;
+                } else {
+                    this.darkWorld = DarkWorld.buildDarkWorld(level, this);
+                }
             }
 
             List<BlockPos> foundBreaches = getRoomBreaches(level);
