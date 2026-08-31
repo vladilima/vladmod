@@ -1,6 +1,8 @@
 package com.vladilima.vladmod;
 
+import com.vladilima.vladmod.gui.textbox.TextboxScreen;
 import com.vladilima.vladmod.registries.*;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -47,9 +49,16 @@ public class VladMod {
         ModParticles.register(modEventBus);
         ModPackets.register(modEventBus);
         ModCreativeTab.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
+
+        modEventBus.addListener(this::registerScreens);
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    public void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(ModMenuTypes.TEXTBOX.get(), TextboxScreen::new);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
