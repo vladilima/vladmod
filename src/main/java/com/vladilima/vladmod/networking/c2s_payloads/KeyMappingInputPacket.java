@@ -33,7 +33,7 @@ public record KeyMappingInputPacket(String key) implements CustomPacketPayload {
                 case "key.vladmod.soul_confirm":
                     player.openMenu(new SimpleMenuProvider(
                             (containerId, playerInventory, player1) -> new TextboxMenu(containerId, playerInventory),
-                            Component.literal("Textbox")
+                            Component.literal("By second nature, you reach\nout, and...")
                     ));
 //                    SoulPower.attemptSealFountain(player);
                     break;
